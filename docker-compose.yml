@@ -1,0 +1,23 @@
+version: '3.4'
+
+networks:
+  grafana:
+
+volumes:
+  grafana:
+
+services:
+  grafana:
+    image: grafana/grafana:7.1.5
+    networks:
+      - grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=k6-cloud-ds
+    volumes:
+      - "grafana:/var/lib/grafana"
+      - "./:/var/lib/grafana/plugins/k6-cloud-ds"

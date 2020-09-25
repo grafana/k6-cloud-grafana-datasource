@@ -1,0 +1,10 @@
+Things I uncovered while building a Grafana data source plugin
+- Do get the "chained variables" to work you need to have your QueryModel contain a `query` field with variable referenced to the variable your variable depends on
+- There's no clean way that I've found to transfer both a label and ID from a template query variable to the `DataSource.metricFindQuery()` method.
+- Can't link from one dashboard to another and specify `to` and `from` QS params based on DateTime formatted columns in Table panel.
+- No way to refer to hidden fields in Table panel data link.
+
+
+Things noted with the API:
+- `http_status` in URLs API is not used? or is it for pre-protocol switch to WebSocket? otherwise it's strange to have both `http_status` and `status`.
+- `status` always seems to be null in the Checks API. What is it used for?
