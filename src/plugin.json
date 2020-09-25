@@ -1,7 +1,7 @@
 {
   "type": "datasource",
   "name": "k6 Cloud",
-  "id": "k6-cloud-ds",
+  "id": "k6-cloud-datasource",
   "metrics": true,
   "info": {
     "description": "Access load test results from k6 Cloud in Grafana",
