@@ -1,4 +1,40 @@
 {
+  "__inputs": [
+    {
+      "name": "datasource",
+      "label": "k6 Cloud",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "k6-cloud-datasource",
+      "pluginName": "k6 Cloud"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "k6-cloud-datasource",
+      "name": "k6 Cloud",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -27,8 +63,6 @@
       "url": "/d/k6-cloud-test-runs/test-runs-list?orgId=$__org&refresh=1m&var-datasource=$datasource&var-organization=$organization&var-project=$project&var-test=$test"
     }
   ],
-
-
   "panels": [
     {
       "aliasColors": {},
@@ -889,7 +923,7 @@
         "multi": false,
         "name": "datasource",
         "options": [],
-        "query": "k6-cloud-ds",
+        "query": "k6-cloud-datasource",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
