@@ -7,6 +7,9 @@ Thi Grafana data source plugin allows you to view your tests results stored in k
 ![k6 Cloud Test Run Result Dashboard](src/img/screenshot_test_run_result1.png)
 
 ## Getting started
+
+The instructions below will get you setup with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
+
 1. Install dependencies
 ```BASH
 yarn install
@@ -24,6 +27,40 @@ docker-compose up -d
 6. Configure the data source by entering your k6 Cloud API token ([found here](https://app.k6.io/account/api-token)): [http://localhost:3000/datasources/edit/1/](http://localhost:3000/datasources/edit/1/)
 7. Visit the "Dashboards" tab and "import" the two dashboards that come with the data source plugin: [http://localhost:3000/datasources/edit/1/dashboards](http://localhost:3000/datasources/edit/1/dashboards)
 8. Visit the test runs list dashboard to start using exploring your k6 Cloud account from Grafana: [http://localhost:3000/d/k6-cloud-test-runs/k6-cloud-test-runs-list](http://localhost:3000/d/k6-cloud-test-runs/k6-cloud-test-runs-list)
+
+## Installation with self-hosted Grafana
+
+If you're self-hosting a Grafana installation you can follow the steps below to get the plugin setup:
+
+1. Install dependencies
+```BASH
+yarn install
+```
+2. Build plugin in production mode
+```BASH
+yarn build
+```
+3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
+```BASH
+cp -r ./dist /your/grafana/plugin/directory/k6-cloud-datasource
+```
+**Linux**: By default, the Linux plugin location is: `/var/lib/grafana/plugins`
+**macOS**: By default, the Mac plugin location is: `/usr/local/var/lib/grafana/plugins`
+5. Make sure you have [configured your Grafana installation](https://grafana.com/docs/grafana/latest/administration/configuration/) to allow unsigned plugins
+```INI
+...
+[plugins]
+allow_loading_unsigned_plugins=true
+...
+```
+4. Restart Grafana to allow it to discover the new plugin, on Linux:
+```BASH
+service grafana-server restart
+```
+on macOS:
+```BASH
+brew services restart grafana
+```
 
 ## Learn more
 - [k6 Cloud](https://k6.io/)
