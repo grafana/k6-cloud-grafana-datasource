@@ -45,15 +45,17 @@ yarn build
 cp -r ./dist /your/grafana/plugin/directory/k6-cloud-datasource
 ```
 **Linux**: By default, the Linux plugin location is: `/var/lib/grafana/plugins`
+
 **macOS**: By default, the Mac plugin location is: `/usr/local/var/lib/grafana/plugins`
-5. Make sure you have [configured your Grafana installation](https://grafana.com/docs/grafana/latest/administration/configuration/) to allow unsigned plugins
+
+4. Make sure you have [configured your Grafana installation](https://grafana.com/docs/grafana/latest/administration/configuration/) to allow unsigned plugins
 ```INI
 ...
 [plugins]
 allow_loading_unsigned_plugins=true
 ...
 ```
-4. Restart Grafana to allow it to discover the new plugin, on Linux:
+5. Restart Grafana to allow it to discover the new plugin, on Linux:
 ```BASH
 service grafana-server restart
 ```
