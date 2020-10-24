@@ -333,9 +333,18 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         _.map(Object.fromEntries(tags), (value, key) => `${key}:${value}`),
         ', '
       );
+      if (tagsList !== '') {
+        valueName = `${valueName}<${tagsList}>`;
+      }
     }
-    if (tagsList !== '') {
-      valueName = `${metric}<${tagsList}>`;
+    if (aggregation) {
+      let m = aggregation.match(PERCENTILE_REGEX);
+      if (m?.length === 2) {
+        let percentile = parseFloat(m[1]);
+        valueName = `p(${percentile}, ${valueName})`;
+      } else {
+        valueName = `${aggregation}(${valueName})`;
+      }
     }
     return [
       { name: 'Time', values: timeValues, type: FieldType.time },
