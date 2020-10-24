@@ -84,24 +84,32 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
     query.qtype = query.qtype === null ? K6QueryType.METRIC : query.qtype;
     query.projectId = query.projectId || '';
+    query.testId = query.testId || '';
+    query.testRunId = query.testRunId || '';
 
-    const resolvedProjectId = datasource.resolveVar(query.projectId, parseInt(query.projectId, 10));
-    const resolvedTestId = datasource.resolveVar(query.testId, parseInt(query.testId, 10));
-    const resolvedTestRunId = datasource.resolveVar(query.testRunId, parseInt(query.testRunId, 10));
+    const resolvedProjectId = datasource.resolveVar(
+      query.projectId,
+      query.projectId ? parseInt(query.projectId, 10) : undefined
+    );
+    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? parseInt(query.testId, 10) : undefined);
+    const resolvedTestRunId = datasource.resolveVar(
+      query.testRunId,
+      query.testRunId ? parseInt(query.testRunId, 10) : undefined
+    );
 
     const projectList = _.flatten(await datasource.getAllProjects());
     const current: any = _.find(projectList, { id: resolvedProjectId });
     this.setState({ projectList: projectList, currentProject: current });
 
-    if (resolvedProjectId !== '') {
+    if (resolvedProjectId !== undefined) {
       const testList = await datasource.getTestsForProject(resolvedProjectId);
       this.setState({ testList: testList, currentTest: null });
     }
-    if (resolvedTestId !== '') {
+    if (resolvedTestId !== undefined) {
       const testRunList = await datasource.getTestRunsForTest(resolvedTestId);
       this.setState({ testRunList: testRunList, currentTestRun: null });
     }
-    if (resolvedTestRunId !== '') {
+    if (resolvedTestRunId !== undefined) {
       await this.initTestRun(resolvedTestRunId);
     }
   }
@@ -109,24 +117,30 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   async componentDidUpdate(prevProps: Props) {
     const { query, datasource } = this.props;
 
-    const resolvedProjectId = datasource.resolveVar(query.projectId, parseInt(query.projectId, 10));
-    const resolvedTestId = datasource.resolveVar(query.testId, parseInt(query.testId, 10));
-    const resolvedTestRunId = datasource.resolveVar(query.testRunId, parseInt(query.testRunId, 10));
+    const resolvedProjectId = datasource.resolveVar(
+      query.projectId,
+      query.projectId ? parseInt(query.projectId, 10) : undefined
+    );
+    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? parseInt(query.testId, 10) : undefined);
+    const resolvedTestRunId = datasource.resolveVar(
+      query.testRunId,
+      query.testRunId ? parseInt(query.testRunId, 10) : undefined
+    );
 
-    if (resolvedProjectId !== '' && query.projectId !== prevProps.query.projectId) {
+    if (resolvedProjectId !== undefined && query.projectId !== prevProps.query.projectId) {
       const testList = await datasource.getTestsForProject(resolvedProjectId);
       this.setState({ testList: testList, currentTest: null });
     }
-    if (resolvedTestId !== '' && query.testId !== prevProps.query.testId) {
+    if (resolvedTestId !== undefined && query.testId !== prevProps.query.testId) {
       const testRunList = await datasource.getTestRunsForTest(resolvedTestId);
       this.setState({ testRunList: testRunList, currentTestRun: null });
     }
-    if (resolvedTestRunId !== '' && query.testRunId !== prevProps.query.testRunId) {
+    if (resolvedTestRunId !== undefined && query.testRunId !== prevProps.query.testRunId) {
       await this.initTestRun(resolvedTestRunId);
     }
   }
 
-  async initTestRun(testRunId: any) {
+  async initTestRun(testRunId: number) {
     const { datasource } = this.props;
     const currentTestRun = _.head(_.filter(this.state.testRunList, { id: testRunId }))!;
     const metricsList = await datasource.getMetricsForTestRun(testRunId);
@@ -312,7 +326,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
     if (key) {
       if (!this.state.tagsValues.has(key)) {
-        datasource.getTagValuesForTag(resolvedTestRunId, key).then(tagValues => {
+        datasource.getTagValuesForTag(resolvedTestRunId!, key).then(tagValues => {
           this.state.tagsValues.set(key, tagValues);
         });
       }
