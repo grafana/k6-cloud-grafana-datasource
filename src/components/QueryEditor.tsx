@@ -30,7 +30,7 @@ type QueryEditorState = {
   currentTestRun: K6TestRun | null;
   metricsList: K6Metric[];
   metricNameList: string[];
-  currentMetric: string | null;
+  currentMetric: K6Metric | null;
   currentTags: K6SerieTag[];
   tagsList: string[];
   tagsValues: Map<string, string[]>;
@@ -141,7 +141,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   }
 
   async initTestRun(testRunId: number) {
-    const { datasource } = this.props;
+    const { datasource, query } = this.props;
     const currentTestRun = _.head(_.filter(this.state.testRunList, { id: testRunId }))!;
     const metricsList = await datasource.getMetricsForTestRun(testRunId);
     const metricNameList: string[] = _.reduce(
@@ -155,17 +155,20 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
       [] as string[]
     );
     const tagsList = await datasource.getTagsForTestRun(testRunId);
+    const metric = getMetricFromMetricNameAndTags(metricsList, query.metric!, query.tags);
     this.setState({
       currentTestRun: currentTestRun,
       metricsList: metricsList,
       metricNameList: metricNameList,
-      currentMetric: null,
+      currentMetric: metric ? metric : null,
       tagsList: tagsList,
     });
-    if (currentTestRun) {
+    if (currentTestRun && currentTestRun.started && currentTestRun.ended) {
       getLocationSrv().update({
         partial: true,
-        query: { from: currentTestRun.started.getTime(), to: currentTestRun.ended.getTime() },
+        // For some reason we need to cast the `started` and `ended` props to Date here,
+        // even though they're typed as Date, as the prototype seems to be missing `getTime()`.
+        query: { from: new Date(currentTestRun.started).getTime(), to: new Date(currentTestRun.ended).getTime() },
       });
     }
   }
@@ -280,10 +283,9 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
       ...query,
       metric: metric?.name,
       aggregation: AGGREGATION_TYPES[metricTypeAsStr].default,
-      // TODO: add tags here?
     });
     this.setState({
-      currentMetric: item.value!,
+      currentMetric: metric ? metric : null,
     });
     onRunQuery();
   };
@@ -300,7 +302,10 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   _updateTags = (id: number, tags: Map<string, string>, deleted: boolean) => {
     const { onChange, query, onRunQuery } = this.props;
 
-    let metric = getMetricFromMetricNameAndTags(this.state.metricsList, this.state.currentMetric!, tags);
+    let metric = getMetricFromMetricNameAndTags(this.state.metricsList, this.state.currentMetric!.name, tags);
+    this.setState({
+      currentMetric: metric ? metric : null,
+    });
 
     onChange({
       ...query,
@@ -486,7 +491,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   renderAggregationList() {
     const { query } = this.props;
-    const metric = getMetricFromMetricNameAndTags(this.state.metricsList, query.metric!, query.tags);
+    const metric = this.state.currentMetric;
     let metricTypeDef = AGGREGATION_TYPES[getTypeFromMetricEnum(K6MetricType.TREND)].default;
     let options: Array<SelectableValue<string>> = [];
     if (metric) {
