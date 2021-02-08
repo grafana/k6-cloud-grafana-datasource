@@ -51,7 +51,7 @@ export class VariableQueryEditor extends PureComponent<VariableQueryProps, State
 
   render() {
     const options = _.map(
-      _.filter(Object.keys(K6VariableQueryType), (k) => (_.isNaN(parseInt(k, 10)) ? false : true)),
+      _.filter(Object.keys(K6VariableQueryType), (k) => !_.isNaN(parseInt(k, 10))),
       (item) => {
         return {
           label: getTypeFromVariableQueryEnum(Number(item) as K6VariableQueryType),

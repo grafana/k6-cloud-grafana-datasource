@@ -8,7 +8,7 @@ Thi Grafana data source plugin allows you to view your tests results stored in k
 
 ## Getting started
 
-The instructions below will get you setup with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
+The instructions below will get you set up with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
 
 1. Install dependencies
 ```BASH

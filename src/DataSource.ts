@@ -22,7 +22,7 @@ import {
   K6Organization,
   K6Project,
   K6QueryType,
-  K6Serie,
+  K6Series,
   K6Test,
   K6TestRun,
   K6TestRunListItem,
@@ -39,7 +39,7 @@ import {
   reduceByObjectProp,
 } from './utils';
 
-const PERCENTILE_REGEX = new RegExp('p\\(([0-9\\.]+)\\)', 'i');
+const PERCENTILE_REGEX = new RegExp('p\\(([0-9.]+)\\)', 'i');
 const VAR_QUERY_ID_REGEX = new RegExp('([0-9]+)(: (.+))?', 'i');
 
 // TODO: make these dynamic based on test run status
@@ -63,9 +63,6 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
   }
 
   async query(options: DataQueryRequest<K6CloudQuery>): Promise<DataQueryResponse> {
-    const { range } = options;
-    const tfrom = range!.from.valueOf();
-    const to = range!.to.valueOf();
     let data = { data: [] as MutableDataFrame[] };
 
     for (const target of options.targets) {
@@ -136,7 +133,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         ) {
           const metricsList = await this.getMetricsForTestRun(resolvedTestRunId);
           const metricObj = getMetricFromMetricNameAndTags(metricsList, metric, tags);
-          const serie = await this.getSeriesForMetric(resolvedTestRunId, metricObj!.id, aggregation, tags, tfrom, to);
+          const serie = await this.getSeriesForMetric(resolvedTestRunId, metricObj!.id, aggregation, tags);
           const fields = this.convertSerieToFields(serie, metricObj!, tags, aggregation);
           data.data.push(
             new MutableDataFrame({
@@ -151,7 +148,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
     return data;
   }
 
-  async metricFindQuery(query: K6VariableQuery, options?: any) {
+  async metricFindQuery(query: K6VariableQuery) {
     const orgId = this.resolveVar('$organization');
     const projectId = this.resolveVar('$project');
     const testId = this.resolveVar('$test');
@@ -319,7 +316,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
     ];
   }
 
-  convertSerieToFields(serie: K6Serie, metric: K6Metric, tags?: Map<string, string>, aggregation?: string) {
+  convertSerieToFields(serie: K6Series, metric: K6Metric, tags?: Map<string, string>, aggregation?: string) {
     const timeValues = _.map(serie.values, (d) => {
       return dateTimeParse(d.timestamp).unix() * 1000;
     });
@@ -558,7 +555,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
               method: String(u.method),
               status: parseInt(u.status, 10),
               httpStatus: parseInt(u.http_status, 10),
-              isWebSocket: u.is_web_socket ? true : false,
+              isWebSocket: !!u.is_web_socket,
               count: parseInt(u.count, 10),
               loadTime: parseFloat(u.load_time),
               min: parseFloat(u.min),
@@ -600,7 +597,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
               metrics: undefined,
               name: String(c.name),
               firstSeen: new Date(c.first_seen),
-              success: c.success ? true : false,
+              success: !!c.success,
               successCount: parseInt(c.success_count, 10),
               totalCount: parseInt(c.total_count, 10),
             };
@@ -635,7 +632,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
               name: String(t.name),
               stat: String(t.stat),
               calculatedValue: parseFloat(t.calculated_value),
-              tainted: t.tainted ? true : false,
+              tainted: !!t.tainted,
               taintedAt: t.tainted_at ? new Date(t.tainted_at) : undefined,
               value: parseFloat(t.value),
             };
@@ -686,14 +683,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
     return data;
   }
 
-  async getSeriesForMetric(
-    testRunId: number,
-    metricId: string,
-    aggregation?: string,
-    tags?: Map<string, string>,
-    from?: number,
-    to?: number
-  ) {
+  async getSeriesForMetric(testRunId: number, metricId: string, aggregation?: string, tags?: Map<string, string>) {
     aggregation = aggregation ? aggregation : 'avg';
     let m = aggregation.match(PERCENTILE_REGEX);
     if (m?.length === 2) {
@@ -703,7 +693,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
     let tagsQs = '';
     if (tags) {
       tagsQs = _.join(
-        Array.from(tags, (value, key) => `${encodeURIComponent(value[0])}:${encodeURIComponent(value[1])}`),
+        Array.from(tags, (value) => `${encodeURIComponent(value[0])}:${encodeURIComponent(value[1])}`),
         `&${encodeURIComponent('tags[]')}=`
       );
     }

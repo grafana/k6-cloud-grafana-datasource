@@ -14,7 +14,7 @@ import {
   K6MetricType,
   K6Project,
   K6QueryType,
-  K6SerieTag,
+  K6SeriesTag,
   K6Test,
   K6TestRun,
 } from '../types';
@@ -31,7 +31,7 @@ type QueryEditorState = {
   metricsList: K6Metric[];
   metricNameList: string[];
   currentMetric: K6Metric | null;
-  currentTags: K6SerieTag[];
+  currentTags: K6SeriesTag[];
   tagsList: string[];
   tagsValues: Map<string, string[]>;
 };
@@ -216,7 +216,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     });
   };
 
-  _getTagValuesForMetric(metricName: string, tagName: string, tagValues: string[], currentTags: K6SerieTag[]) {
+  _getTagValuesForMetric(metricName: string, tagName: string, tagValues: string[], currentTags: K6SeriesTag[]) {
     const specialTags = ['url', 'method', 'status'];
     if (!_.includes(specialTags, tagName) || currentTags === []) {
       return tagValues;
@@ -299,7 +299,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     onRunQuery();
   };
 
-  _updateTags = (id: number, tags: Map<string, string>, deleted: boolean) => {
+  _updateTags = (id: number, tags: Map<string, string>) => {
     const { onChange, query, onRunQuery } = this.props;
 
     let metric = getMetricFromMetricNameAndTags(this.state.metricsList, this.state.currentMetric!.name, tags);
@@ -340,7 +340,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     let tags = new Map<string, string>();
     this.state.currentTags.forEach((item) => tags.set(item.key, item.value));
 
-    this._updateTags(id, tags, false);
+    this._updateTags(id, tags);
   };
 
   onTagDelete = (id: number) => {
@@ -351,7 +351,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     let tags = new Map<string, string>();
     clone.forEach((item) => tags.set(item.key, item.value));
 
-    this._updateTags(id, tags, true);
+    this._updateTags(id, tags);
   };
 
   onTagInsertClick = () => {
@@ -364,7 +364,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     const { query } = this.props;
 
     const options = _.map(
-      _.filter(Object.keys(K6QueryType), (k) => (_.isNaN(parseInt(k, 10)) ? false : true)),
+      _.filter(Object.keys(K6QueryType), (k) => !_.isNaN(parseInt(k, 10))),
       (item) => {
         return {
           label: toTitleCase(getTypeFromQueryTypeEnum(Number(item) as K6QueryType)),
@@ -534,7 +534,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   renderTagList() {
     const query = this.props.query;
     const tagKeys: string[] = this.state.tagsList;
-    const tagSelectors = _.map(this.state.currentTags, (item) => {
+    return _.map(this.state.currentTags, (item) => {
       let tagValues: string[] = [];
       if (this.state.tagsValues.has(item.key)) {
         tagValues = this._getTagValuesForMetric(
@@ -554,7 +554,6 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
         />
       );
     });
-    return tagSelectors;
   }
 
   renderTagInsertButton() {

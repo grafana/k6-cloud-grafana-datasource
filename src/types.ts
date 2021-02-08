@@ -184,19 +184,19 @@ export interface K6Metric {
   tags?: Map<string, string>;
 }
 
-export interface K6SerieDataPoint {
+export interface K6SeriesDataPoint {
   timestamp: string;
   value: number;
 }
 
-export interface K6Serie {
+export interface K6Series {
   id: string;
   metricId: string;
   aggregation: string;
-  values: K6SerieDataPoint[];
+  values: K6SeriesDataPoint[];
 }
 
-export interface K6SerieTag {
+export interface K6SeriesTag {
   id: number;
   key: string;
   value: string;
