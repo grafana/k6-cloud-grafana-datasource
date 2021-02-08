@@ -10,13 +10,13 @@ import { DataSource } from '../DataSource';
 import {
   K6CloudDataSourceOptions,
   K6CloudQuery,
-  K6QueryType,
-  K6Project,
-  K6Test,
-  K6TestRun,
   K6Metric,
   K6MetricType,
+  K6Project,
+  K6QueryType,
   K6SerieTag,
+  K6Test,
+  K6TestRun,
 } from '../types';
 import { getMetricFromMetricNameAndTags, getTypeFromMetricEnum, getTypeFromQueryTypeEnum, toTitleCase } from '../utils';
 
@@ -146,7 +146,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     const metricsList = await datasource.getMetricsForTestRun(testRunId);
     const metricNameList: string[] = _.reduce(
       metricsList,
-      function(result, metric) {
+      function (result, metric) {
         if (!_.includes(result, metric.name)) {
           result.push(metric.name);
         }
@@ -331,14 +331,14 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
     if (key) {
       if (!this.state.tagsValues.has(key)) {
-        datasource.getTagValuesForTag(resolvedTestRunId!, key).then(tagValues => {
+        datasource.getTagValuesForTag(resolvedTestRunId!, key).then((tagValues) => {
           this.state.tagsValues.set(key, tagValues);
         });
       }
     }
 
     let tags = new Map<string, string>();
-    this.state.currentTags.forEach(item => tags.set(item.key, item.value));
+    this.state.currentTags.forEach((item) => tags.set(item.key, item.value));
 
     this._updateTags(id, tags, false);
   };
@@ -349,7 +349,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     this.setState({ currentTags: clone });
 
     let tags = new Map<string, string>();
-    clone.forEach(item => tags.set(item.key, item.value));
+    clone.forEach((item) => tags.set(item.key, item.value));
 
     this._updateTags(id, tags, true);
   };
@@ -364,15 +364,15 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     const { query } = this.props;
 
     const options = _.map(
-      _.filter(Object.keys(K6QueryType), k => (_.isNaN(parseInt(k, 10)) ? false : true)),
-      item => {
+      _.filter(Object.keys(K6QueryType), (k) => (_.isNaN(parseInt(k, 10)) ? false : true)),
+      (item) => {
         return {
           label: toTitleCase(getTypeFromQueryTypeEnum(Number(item) as K6QueryType)),
           value: item,
         };
       }
     );
-    const current = options.find(item => item.value === String(query.qtype));
+    const current = options.find((item) => item.value === String(query.qtype));
 
     return (
       <div className="gf-form">
@@ -386,12 +386,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   renderProjectList() {
     const { query } = this.props;
-    let options = this.state.projectList.map(item => ({
+    let options = this.state.projectList.map((item) => ({
       label: `${item.organizationName} / ${item.name}`,
       value: String(item.id),
     }));
     options.push({ label: '$project', value: '$project' });
-    const current = options.find(item => item.value === String(query.projectId));
+    const current = options.find((item) => item.value === String(query.projectId));
 
     return (
       <div className="gf-form">
@@ -403,7 +403,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
           value={current}
           onChange={this.onProjectChange}
           allowCustomValue
-          onCreateOption={customValue => {
+          onCreateOption={(customValue) => {
             this.onProjectChange({ value: customValue });
           }}
         />
@@ -413,12 +413,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   renderTestList() {
     const { query } = this.props;
-    let options = this.state.testList.map(item => ({
+    let options = this.state.testList.map((item) => ({
       label: item.name,
       value: String(item.id),
     }));
     options.push({ label: '$test', value: '$test' });
-    const current = options.find(item => item.value === String(query.testId));
+    const current = options.find((item) => item.value === String(query.testId));
 
     return (
       <div className="gf-form">
@@ -430,7 +430,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
           value={current}
           onChange={this.onTestChange}
           allowCustomValue
-          onCreateOption={customValue => {
+          onCreateOption={(customValue) => {
             this.onTestChange({ value: customValue });
           }}
         />
@@ -440,12 +440,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   renderTestRunList() {
     const { query } = this.props;
-    let options = this.state.testRunList.map(item => ({
+    let options = this.state.testRunList.map((item) => ({
       label: `${item.created.toLocaleString()} (vus: ${item.vus}, duration: ${item.duration})`,
       value: String(item.id),
     }));
     options.push({ label: '$testrun', value: '$testrun' });
-    const current = options.find(item => item.value === String(query.testRunId));
+    const current = options.find((item) => item.value === String(query.testRunId));
 
     return (
       <div className="gf-form">
@@ -457,7 +457,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
           value={current}
           onChange={this.onTestRunChange}
           allowCustomValue
-          onCreateOption={customValue => {
+          onCreateOption={(customValue) => {
             this.onTestRunChange({ value: customValue });
           }}
         />
@@ -471,13 +471,13 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   renderMetricsList() {
     const { query } = this.props;
-    let options = _.map(this.state.metricNameList, item => {
+    let options = _.map(this.state.metricNameList, (item) => {
       return {
         label: item,
         value: item,
       };
     });
-    const current = query.metric ? options.find(item => item.value === query.metric) : undefined;
+    const current = query.metric ? options.find((item) => item.value === query.metric) : undefined;
 
     return (
       <div className="gf-form">
@@ -499,7 +499,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
       const metricTypeAsStr = getTypeFromMetricEnum(metricType !== undefined ? metricType : K6MetricType.TREND);
       metricTypeDef = AGGREGATION_TYPES[metricTypeAsStr].default;
       const aggTypesForMetricType = AGGREGATION_TYPES[metricTypeAsStr].methods;
-      options = aggTypesForMetricType.map(item => {
+      options = aggTypesForMetricType.map((item) => {
         let label = item;
         if (_.includes(['data_received', 'data_sent'], query.metric)) {
           if (label === 'count') {
@@ -517,7 +517,9 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
       });
     }
 
-    const current = options.find(item => item.value === (query.aggregation !== '' ? query.aggregation : metricTypeDef));
+    const current = options.find(
+      (item) => item.value === (query.aggregation !== '' ? query.aggregation : metricTypeDef)
+    );
 
     return (
       <div className="gf-form">
@@ -532,7 +534,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   renderTagList() {
     const query = this.props.query;
     const tagKeys: string[] = this.state.tagsList;
-    const tagSelectors = _.map(this.state.currentTags, item => {
+    const tagSelectors = _.map(this.state.currentTags, (item) => {
       let tagValues: string[] = [];
       if (this.state.tagsValues.has(item.key)) {
         tagValues = this._getTagValuesForMetric(

@@ -6,35 +6,35 @@ import {
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
-  MutableDataFrame,
-  FieldType,
-  dateTimeParse,
   dateTimeFormat,
+  dateTimeParse,
+  FieldType,
+  MutableDataFrame,
 } from '@grafana/data';
 import { getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 
 import {
-  K6CloudQuery,
-  K6CloudDataSourceOptions,
   defaultQuery,
-  K6TestRunListItem,
-  K6QueryType,
-  K6VariableQuery,
-  K6VariableQueryType,
+  K6Check,
+  K6CloudDataSourceOptions,
+  K6CloudQuery,
+  K6Metric,
   K6Organization,
   K6Project,
+  K6QueryType,
+  K6Serie,
   K6Test,
   K6TestRun,
-  K6Url,
-  K6Check,
+  K6TestRunListItem,
   K6Threshold,
-  K6Metric,
-  K6Serie,
+  K6Url,
+  K6VariableQuery,
+  K6VariableQueryType,
 } from './types';
 import {
-  getRunStatusFromEnum,
-  getMetricFromMetricNameAndTags,
   getEnumFromMetricType,
+  getMetricFromMetricNameAndTags,
+  getRunStatusFromEnum,
   getUnitFromMetric,
   reduceByObjectProp,
 } from './utils';
@@ -159,16 +159,16 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
     // Retrieve DataQueryResponse based on query.
     if (query.qtype === K6VariableQueryType.ORGANIZATIONS) {
       const orgs = await this.getOrganizations();
-      return orgs.map(o => ({ text: `${o.id}: ${o.name}` }));
+      return orgs.map((o) => ({ text: `${o.id}: ${o.name}` }));
     } else if (query.qtype === K6VariableQueryType.PROJECTS && orgId) {
       const projects = await this.getProjectsForOrganization(orgId);
-      return projects.map(p => ({ text: `${p.id}: ${p.name}` }));
+      return projects.map((p) => ({ text: `${p.id}: ${p.name}` }));
     } else if (query.qtype === K6VariableQueryType.TESTS && projectId) {
       const tests = await this.getTestsForProject(projectId);
-      return tests.map(t => ({ text: `${t.id}: ${t.name}` }));
+      return tests.map((t) => ({ text: `${t.id}: ${t.name}` }));
     } else if (query.qtype === K6VariableQueryType.TEST_RUNS && testId) {
       const testRuns = await this.getTestRunsForTest(testId);
-      return testRuns.map(r => ({
+      return testRuns.map((r) => ({
         text: `${r.id}: ${dateTimeFormat(r.created, {
           defaultWithMS: false,
           format: 'YYYY-MM-DD HH:mm:ss',
@@ -273,7 +273,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
       { name: 'Successful', values: reduceByObjectProp(checksList, 'successCount'), type: FieldType.number },
       {
         name: 'Success rate',
-        values: _.map(checksList, c => {
+        values: _.map(checksList, (c) => {
           return (c.successCount / c.totalCount) * 100.0;
         }),
         type: FieldType.number,
@@ -293,7 +293,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
       },
       {
         name: 'Pass/Fail',
-        values: _.map(thresholdsList, t => (t.tainted ? 1 : 0)),
+        values: _.map(thresholdsList, (t) => (t.tainted ? 1 : 0)),
         type: FieldType.number,
       },
     ];
@@ -320,10 +320,10 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
   }
 
   convertSerieToFields(serie: K6Serie, metric: K6Metric, tags?: Map<string, string>, aggregation?: string) {
-    const timeValues = _.map(serie.values, d => {
+    const timeValues = _.map(serie.values, (d) => {
       return dateTimeParse(d.timestamp).unix() * 1000;
     });
-    const values = _.map(serie.values, d => {
+    const values = _.map(serie.values, (d) => {
       return d.value;
     });
     let valueName = metric!.name;
@@ -368,15 +368,15 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: 'k6-cloud-v3-organizations',
         })
-        .then(response => {
-          return _.map(response.data.organizations, org => {
+        .then((response) => {
+          return _.map(response.data.organizations, (org) => {
             return {
               id: parseInt(org.id, 10),
               name: String(org.name),
             };
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getProjects): ', error);
           return [];
         });
@@ -396,8 +396,8 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: `k6-cloud-v3-organizations-${organizationId}-projects`,
         })
-        .then(response => {
-          return _.map(response.data.projects, project => {
+        .then((response) => {
+          return _.map(response.data.projects, (project) => {
             return {
               id: parseInt(project.id, 10),
               name: String(project.name),
@@ -406,7 +406,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             };
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getProjectsForOrganization): ', error);
           return [];
         });
@@ -423,17 +423,17 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         method: 'GET',
         requestId: 'k6-cloud-v3-organizations',
       })
-      .then(response => {
+      .then((response) => {
         return Promise.all(
-          _.map(response.data.organizations, org => {
+          _.map(response.data.organizations, (org) => {
             return srv
               .datasourceRequest({
                 url: this.url + '/base' + `/v3/organizations/${org.id}/projects`,
                 method: 'GET',
                 requestId: `k6-cloud-v3-organizations-${org.id}-projects`,
               })
-              .then(response => {
-                return _.map(response.data.projects, project => {
+              .then((response) => {
+                return _.map(response.data.projects, (project) => {
                   return {
                     id: parseInt(project.id, 10),
                     name: String(project.name),
@@ -442,14 +442,14 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
                   };
                 });
               })
-              .catch(error => {
+              .catch((error) => {
                 console.log('ERROR (getAllProjects): ', error);
                 return [];
               });
           })
         );
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('ERROR (getAllProjects): ', error);
         return [];
       });
@@ -469,9 +469,9 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: `k6-cloud-loadtests-v2-project-${projectId}`,
         })
-        .then(response => {
+        .then((response) => {
           return _.sortBy(
-            _.map(response.data['k6-tests'], t => {
+            _.map(response.data['k6-tests'], (t) => {
               return {
                 id: parseInt(t.id, 10),
                 projectId: parseInt(t.project_id, 10),
@@ -483,7 +483,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             ['-lastTestRunId', '-created']
           );
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getTestsForProject): ', error);
           return [];
         });
@@ -506,9 +506,9 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: `k6-cloud-loadtests-v2-runs-${testId}`,
         })
-        .then(response => {
+        .then((response) => {
           return _.sortBy(
-            _.map(response.data['k6-runs'], t => {
+            _.map(response.data['k6-runs'], (t) => {
               return {
                 id: parseInt(t.id, 10),
                 created: new Date(t.created),
@@ -526,7 +526,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             ['-created']
           );
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getTestRunsForTest): ', error);
           return [];
         });
@@ -546,8 +546,8 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: `k6-cloud-loadtests-v3-urls-${testRunId}`,
         })
-        .then(response => {
-          return _.map(response.data['k6-urls'], u => {
+        .then((response) => {
+          return _.map(response.data['k6-urls'], (u) => {
             return {
               id: String(u.id),
               projectId: parseInt(u.project_id, 10),
@@ -570,7 +570,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             };
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getURLsForTestRun): ', error);
           return [];
         });
@@ -590,8 +590,8 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: `k6-cloud-loadtests-v3-checks-${testRunId}`,
         })
-        .then(response => {
-          return _.map(response.data['k6-checks'], c => {
+        .then((response) => {
+          return _.map(response.data['k6-checks'], (c) => {
             return {
               id: String(c.id),
               projectId: parseInt(c.project_id, 10),
@@ -606,7 +606,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             };
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getChecksForTestRun): ', error);
           return [];
         });
@@ -626,8 +626,8 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           method: 'GET',
           requestId: `k6-cloud-loadtests-v2-thresholds-${testRunId}`,
         })
-        .then(response => {
-          return _.map(response.data['k6-thresholds'], t => {
+        .then((response) => {
+          return _.map(response.data['k6-thresholds'], (t) => {
             return {
               id: String(t.id),
               testRunId: parseInt(t.test_run_id, 10),
@@ -641,7 +641,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             };
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getThresholdsForTestRun): ', error);
           return [];
         });
@@ -662,8 +662,8 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           // Note: no "requestId" here as we want to support running several panel queries
           // in parallel which depends on resolving metric names to metric IDs for the k6 Cloud API.
         })
-        .then(response => {
-          return _.map(response.data['k6-metrics'], t => {
+        .then((response) => {
+          return _.map(response.data['k6-metrics'], (t) => {
             return {
               id: String(t.id),
               name: String(t.name),
@@ -677,7 +677,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
             };
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log('ERROR (getMetricsForTestRun): ', error);
           return [];
         });
@@ -719,16 +719,16 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         method: 'GET',
         requestId: `k6-cloud-loadtests-v2-series-${testRunId}-${metricId}`,
       })
-      .then(response => {
+      .then((response) => {
         const d = response.data['k6-serie'][0];
         return {
           id: String(d.id),
           metricId: String(d.metric_id),
           aggregation: String(d.method),
-          values: _.map(d.values || [], p => ({ timestamp: p.timestamp, value: parseFloat(p.value) })),
+          values: _.map(d.values || [], (p) => ({ timestamp: p.timestamp, value: parseFloat(p.value) })),
         };
       })
-      .catch(error => {
+      .catch((error) => {
         return {
           id: error,
           metricId: error,
@@ -745,10 +745,10 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         method: 'GET',
         requestId: `k6-cloud-loadtests-v2-runs-${testRunId}-tags`,
       })
-      .then(response => {
+      .then((response) => {
         return response.data;
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('ERROR (getTagsForTestRun): ', error);
         return [];
       });
@@ -761,19 +761,17 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         method: 'GET',
         requestId: `k6-cloud-loadtests-v2-runs-${testRunId}-tag-values-${tag}`,
       })
-      .then(response => {
+      .then((response) => {
         return response.data;
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('ERROR (getTagValuesForTag): ', error);
         return [];
       });
   }
 
   resolveVar(target: string, defaultValue?: number) {
-    const resolved = getTemplateSrv()
-      .replace(target)
-      .match(VAR_QUERY_ID_REGEX);
+    const resolved = getTemplateSrv().replace(target).match(VAR_QUERY_ID_REGEX);
     return resolved ? parseInt(resolved[1], 10) : defaultValue;
   }
 }

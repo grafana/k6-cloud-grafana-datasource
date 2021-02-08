@@ -52,21 +52,21 @@ export class TagSelector extends PureComponent<TagSelectorStateProps, TagSelecto
   };
 
   render() {
-    const keys = _.map(this.props.keys, item => {
+    const keys = _.map(this.props.keys, (item) => {
       return {
         label: item,
         value: item,
       };
     });
-    const values = _.map(this.props.values, item => {
+    const values = _.map(this.props.values, (item) => {
       return {
         label: item,
         value: item,
       };
     });
 
-    const currentKey = keys.find(item => item.value === this.state.key);
-    const currentValue = values.find(item => item.value === this.state.value);
+    const currentKey = keys.find((item) => item.value === this.state.key);
+    const currentValue = values.find((item) => item.value === this.state.value);
 
     return (
       <div className="gf-form-inline">

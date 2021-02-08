@@ -51,15 +51,15 @@ export class VariableQueryEditor extends PureComponent<VariableQueryProps, State
 
   render() {
     const options = _.map(
-      _.filter(Object.keys(K6VariableQueryType), k => (_.isNaN(parseInt(k, 10)) ? false : true)),
-      item => {
+      _.filter(Object.keys(K6VariableQueryType), (k) => (_.isNaN(parseInt(k, 10)) ? false : true)),
+      (item) => {
         return {
           label: getTypeFromVariableQueryEnum(Number(item) as K6VariableQueryType),
           value: item,
         };
       }
     );
-    const current = options.find(item => item.value === String(this.state.query.qtype));
+    const current = options.find((item) => item.value === String(this.state.query.qtype));
 
     return (
       <>

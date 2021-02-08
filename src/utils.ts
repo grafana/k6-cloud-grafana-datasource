@@ -1,12 +1,12 @@
 import _ from 'lodash';
 
 import {
-  K6TestRunStatus,
-  K6TestRunResultStatus,
   K6Metric,
   K6MetricType,
-  K6VariableQueryType,
   K6QueryType,
+  K6TestRunResultStatus,
+  K6TestRunStatus,
+  K6VariableQueryType,
 } from './types';
 
 export const getMetricFromMetricNameAndTags = (
@@ -14,7 +14,7 @@ export const getMetricFromMetricNameAndTags = (
   metricName: string,
   tags: Map<string, string> | undefined
 ) => {
-  return _.find(_.filter(metricsList, { name: metricName }), item => {
+  return _.find(_.filter(metricsList, { name: metricName }), (item) => {
     const tagMatches = _.map(_.pick(Object.fromEntries(tags || []), ['url', 'method', 'status']), (value, key) => {
       return item.tags?.has(key) ? item.tags?.get(key) === value : false;
     });
@@ -148,7 +148,7 @@ export function getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
 export const reduceByObjectProp = (listOfObjects: any[], propName: any) =>
   _.reduce(
     listOfObjects,
-    function(a, i) {
+    function (a, i) {
       a.push(getProperty(i, propName));
       return a;
     },
@@ -156,7 +156,7 @@ export const reduceByObjectProp = (listOfObjects: any[], propName: any) =>
   );
 
 export const toTitleCase = (s: string) => {
-  return s.toLowerCase().replace(/\w\S*/g, function(t: string) {
+  return s.toLowerCase().replace(/\w\S*/g, function (t: string) {
     const i = t.indexOf('url');
     if (i === 0) {
       return t.substr(0, 3).toUpperCase() + t.substr(3).toLowerCase();
