@@ -20,7 +20,10 @@ import {
 } from '../types';
 import { getMetricFromMetricNameAndTags, getTypeFromMetricEnum, getTypeFromQueryTypeEnum, toTitleCase } from '../utils';
 
+import { QuerySelect } from './QuerySelect';
+
 type Props = QueryEditorProps<DataSource, K6CloudQuery, K6CloudDataSourceOptions>;
+
 type QueryEditorState = {
   projectList: K6Project[];
   currentProject: K6Project | null;
@@ -35,6 +38,18 @@ type QueryEditorState = {
   tagsList: string[];
   tagsValues: Map<string, string[]>;
 };
+
+enum SelectFieldType {
+  PROJECT,
+  TESTS,
+  TEST_RUNS,
+}
+
+enum FieldVariableName {
+  PROJECT = '$project',
+  TESTS = '$tests',
+  TEST_RUNS = '$testruns',
+}
 
 const AGGREGATION_TYPES = {
   trend: {
@@ -384,109 +399,113 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     );
   }
 
-  renderProjectList() {
-    const { query } = this.props;
-    let options = this.state.projectList.map((item) => ({
-      label: `${item.organizationName} / ${item.name}`,
-      value: String(item.id),
-    }));
-    options.push({ label: '$project', value: '$project' });
-    const current = options.find((item) => item.value === String(query.projectId));
+  /**
+   * Returns select data to be used with QuerySelect component
+   * @param {[]}list
+   * @param {string} queryValue
+   * @param {string} fieldName
+   * @param {function} valueCreator
+   * @returns [SelectableValue<string>, SelectableValue<string>[]]
+   */
+  getSelectData<T = any>(
+    list: T[],
+    queryValue: string,
+    fieldName: string,
+    valueCreator: (item: T) => SelectableValue<string>
+  ): [SelectableValue<string> | undefined, SelectableValue[]] {
+    const fieldOptions = list.map(valueCreator);
+    const options = [{ label: fieldName, value: fieldName }, ...fieldOptions];
+    const current = options.find((item) => item.value === queryValue);
 
+    return [current, options];
+  }
+
+  getSelectDataFor(fieldType: SelectFieldType) {
+    const { query } = this.props;
+
+    switch (fieldType) {
+      case SelectFieldType.PROJECT:
+        return this.getSelectData<K6Project>(
+          this.state.projectList,
+          String(query.projectId),
+          FieldVariableName.PROJECT,
+          (item) => ({
+            label: `${item.organizationName} / ${item.name}`,
+            value: String(item.id),
+          })
+        );
+      default:
+        return [];
+    }
+  }
+
+  renderProjectList() {
+    const [current, options] = this.getSelectDataFor(SelectFieldType.PROJECT);
     return (
-      <div className="gf-form">
-        <InlineFormLabel className="query-keyword" width={6}>
-          Project
-        </InlineFormLabel>
-        <Select
-          options={options}
-          value={current}
-          onChange={this.onProjectChange}
-          allowCustomValue
-          onCreateOption={(customValue) => {
-            this.onProjectChange({ value: customValue });
-          }}
-        />
-      </div>
+      <QuerySelect label="Project" onChange={this.onProjectChange} options={options} value={current} allowCustomValue />
     );
   }
 
   renderTestList() {
     const { query } = this.props;
-    let options = this.state.testList.map((item) => ({
+    const { testList } = this.state;
+    const queryValue = String(query.testId);
+
+    const [current, options] = this.getSelectData<K6Test>(testList, queryValue, '$test', (item) => ({
       label: item.name,
       value: String(item.id),
     }));
-    options.push({ label: '$test', value: '$test' });
-    const current = options.find((item) => item.value === String(query.testId));
 
     return (
-      <div className="gf-form">
-        <InlineFormLabel className="query-keyword" width={4}>
-          Test
-        </InlineFormLabel>
-        <Select
-          options={options}
-          value={current}
-          onChange={this.onTestChange}
-          allowCustomValue
-          onCreateOption={(customValue) => {
-            this.onTestChange({ value: customValue });
-          }}
-        />
-      </div>
+      <QuerySelect
+        label="Test"
+        onChange={this.onTestChange}
+        options={options}
+        value={current}
+        width={4}
+        allowCustomValue
+      />
     );
   }
 
   renderTestRunList() {
     const { query } = this.props;
-    let options = this.state.testRunList.map((item) => ({
+    const { testRunList } = this.state;
+    const queryValue = String(query.testRunId);
+
+    const [current, options] = this.getSelectData<K6TestRun>(testRunList, queryValue, '$testrun', (item) => ({
       label: `${item.created.toLocaleString()} (vus: ${item.vus}, duration: ${item.duration})`,
       value: String(item.id),
     }));
-    options.push({ label: '$testrun', value: '$testrun' });
-    const current = options.find((item) => item.value === String(query.testRunId));
 
     return (
-      <div className="gf-form">
-        <InlineFormLabel className="query-keyword" width={6}>
-          Test runs
-        </InlineFormLabel>
-        <Select
-          options={options}
-          value={current}
-          onChange={this.onTestRunChange}
-          allowCustomValue
-          onCreateOption={(customValue) => {
-            this.onTestRunChange({ value: customValue });
-          }}
-        />
-      </div>
+      <QuerySelect
+        label="Test runs"
+        onChange={this.onTestRunChange}
+        options={options}
+        value={current}
+        allowCustomValue
+      />
     );
   }
 
-  _metricIdToMetricType(metridId: string) {
-    return _.find(this.state.metricsList, { id: metridId })?.type;
+  _metricIdToMetricType(metricId: string) {
+    return _.find(this.state.metricsList, { id: metricId })?.type;
   }
 
   renderMetricsList() {
     const { query } = this.props;
-    let options = _.map(this.state.metricNameList, (item) => {
+    const { metricNameList } = this.state;
+    const options = metricNameList.map((item) => {
       return {
         label: item,
         value: item,
       };
     });
+
     const current = query.metric ? options.find((item) => item.value === query.metric) : undefined;
 
-    return (
-      <div className="gf-form">
-        <InlineFormLabel className="query-keyword" width={4}>
-          Metric
-        </InlineFormLabel>
-        <Select options={options} value={current} onChange={this.onMetricChange} />
-      </div>
-    );
+    return <QuerySelect label="Metric" onChange={this.onMetricChange} options={options} value={current} />;
   }
 
   renderAggregationList() {
