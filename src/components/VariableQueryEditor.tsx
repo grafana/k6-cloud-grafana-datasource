@@ -32,7 +32,7 @@ export class VariableQueryEditor extends PureComponent<VariableQueryProps, State
   };
 
   onQueryTypeChange = (item: SelectableValue<string>) => {
-    const type: K6VariableQueryType = parseInt(item.value!, 10) as K6VariableQueryType;
+    const type: K6VariableQueryType = Number(item.value!) as K6VariableQueryType;
     switch (type) {
       case K6VariableQueryType.ORGANIZATIONS:
         this.setState({ query: { qtype: type, query: '' } });
@@ -51,7 +51,7 @@ export class VariableQueryEditor extends PureComponent<VariableQueryProps, State
 
   render() {
     const options = _.map(
-      _.filter(Object.keys(K6VariableQueryType), (k) => !_.isNaN(parseInt(k, 10))),
+      _.filter(Object.keys(K6VariableQueryType), (k) => !_.isNaN(Number(k))),
       (item) => {
         return {
           label: getTypeFromVariableQueryEnum(Number(item) as K6VariableQueryType),

@@ -368,7 +368,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         .then((response) => {
           return _.map(response.data.organizations, (org) => {
             return {
-              id: parseInt(org.id, 10),
+              id: Number(org.id),
               name: String(org.name),
             };
           });
@@ -396,7 +396,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
         .then((response) => {
           return _.map(response.data.projects, (project) => {
             return {
-              id: parseInt(project.id, 10),
+              id: Number(project.id),
               name: String(project.name),
               organizationId: organizationId,
               organizationName: '',
@@ -432,9 +432,9 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
               .then((response) => {
                 return _.map(response.data.projects, (project) => {
                   return {
-                    id: parseInt(project.id, 10),
+                    id: Number(project.id),
                     name: String(project.name),
-                    organizationId: parseInt(org.id, 10),
+                    organizationId: Number(org.id),
                     organizationName: String(org.name),
                   };
                 });
@@ -470,10 +470,10 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           return _.sortBy(
             _.map(response.data['k6-tests'], (t) => {
               return {
-                id: parseInt(t.id, 10),
-                projectId: parseInt(t.project_id, 10),
+                id: Number(t.id),
+                projectId: Number(t.project_id),
                 name: String(t.name),
-                lastTestRunId: t.last_test_run_id ? parseInt(t.last_test_run_id, 10) : undefined,
+                lastTestRunId: t.last_test_run_id ? Number(t.last_test_run_id) : undefined,
                 created: new Date(t.created),
               };
             }),
@@ -507,17 +507,17 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           return _.sortBy(
             _.map(response.data['k6-runs'], (t) => {
               return {
-                id: parseInt(t.id, 10),
+                id: Number(t.id),
                 created: new Date(t.created),
                 started: new Date(t.started),
                 ended: new Date(t.ended),
-                duration: parseInt(t.duration, 10),
-                vus: parseInt(t.vus, 10),
+                duration: Number(t.duration),
+                vus: Number(t.vus),
                 loadTime: parseFloat(t.load_time),
                 rpsAvg: parseFloat(t.rps_avg),
                 rpsMax: parseFloat(t.rps_max),
-                runStatus: parseInt(t.run_status, 10),
-                resultStatus: parseInt(t.result_status, 10),
+                runStatus: Number(t.run_status),
+                resultStatus: Number(t.result_status),
               };
             }),
             ['-created']
@@ -547,16 +547,16 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           return _.map(response.data['k6-urls'], (u) => {
             return {
               id: String(u.id),
-              projectId: parseInt(u.project_id, 10),
-              testRunId: parseInt(u.test_run_id, 10),
+              projectId: Number(u.project_id),
+              testRunId: Number(u.test_run_id),
               groupId: u.group_id ? String(u.group_id) : undefined,
               metrics: undefined,
               url: String(u.name),
               method: String(u.method),
-              status: parseInt(u.status, 10),
-              httpStatus: parseInt(u.http_status, 10),
+              status: Number(u.status),
+              httpStatus: Number(u.http_status),
               isWebSocket: !!u.is_web_socket,
-              count: parseInt(u.count, 10),
+              count: Number(u.count),
               loadTime: parseFloat(u.load_time),
               min: parseFloat(u.min),
               max: parseFloat(u.max),
@@ -591,15 +591,15 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           return _.map(response.data['k6-checks'], (c) => {
             return {
               id: String(c.id),
-              projectId: parseInt(c.project_id, 10),
-              testRunId: parseInt(c.test_run_id, 10),
+              projectId: Number(c.project_id),
+              testRunId: Number(c.test_run_id),
               groupId: c.group_id ? String(c.group_id) : undefined,
               metrics: undefined,
               name: String(c.name),
               firstSeen: new Date(c.first_seen),
               success: !!c.success,
-              successCount: parseInt(c.success_count, 10),
-              totalCount: parseInt(c.total_count, 10),
+              successCount: Number(c.success_count),
+              totalCount: Number(c.total_count),
             };
           });
         })
@@ -627,7 +627,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
           return _.map(response.data['k6-thresholds'], (t) => {
             return {
               id: String(t.id),
-              testRunId: parseInt(t.test_run_id, 10),
+              testRunId: Number(t.test_run_id),
               metricId: String(t.metric_id),
               name: String(t.name),
               stat: String(t.stat),
@@ -762,6 +762,6 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
 
   resolveVar(target: string, defaultValue?: number) {
     const resolved = getTemplateSrv().replace(target).match(VAR_QUERY_ID_REGEX);
-    return resolved ? parseInt(resolved[1], 10) : defaultValue;
+    return resolved ? Number(resolved[1]) : defaultValue;
   }
 }

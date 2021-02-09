@@ -104,12 +104,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
     const resolvedProjectId = datasource.resolveVar(
       query.projectId,
-      query.projectId ? parseInt(query.projectId, 10) : undefined
+      query.projectId ? Number(query.projectId) : undefined
     );
-    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? parseInt(query.testId, 10) : undefined);
+    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? Number(query.testId) : undefined);
     const resolvedTestRunId = datasource.resolveVar(
       query.testRunId,
-      query.testRunId ? parseInt(query.testRunId, 10) : undefined
+      query.testRunId ? Number(query.testRunId) : undefined
     );
 
     const projectList = _.flatten(await datasource.getAllProjects());
@@ -134,12 +134,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
     const resolvedProjectId = datasource.resolveVar(
       query.projectId,
-      query.projectId ? parseInt(query.projectId, 10) : undefined
+      query.projectId ? Number(query.projectId) : undefined
     );
-    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? parseInt(query.testId, 10) : undefined);
+    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? Number(query.testId) : undefined);
     const resolvedTestRunId = datasource.resolveVar(
       query.testRunId,
-      query.testRunId ? parseInt(query.testRunId, 10) : undefined
+      query.testRunId ? Number(query.testRunId) : undefined
     );
 
     if (resolvedProjectId !== undefined && query.projectId !== prevProps.query.projectId) {
@@ -190,7 +190,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   onQueryTypeChange = (item: SelectableValue<string>) => {
     const { query, onRunQuery } = this.props;
-    const qType = parseInt(item.value!, 10);
+    const qType = Number(item.value!);
     this.props.onChange({
       ...query,
       qtype: qType,
@@ -333,7 +333,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   onTagChange = (id: number, key: string | undefined, value: string | undefined) => {
     const { query, datasource } = this.props;
 
-    const resolvedTestRunId = datasource.resolveVar(query.testRunId, parseInt(query.testRunId, 10));
+    const resolvedTestRunId = datasource.resolveVar(query.testRunId, Number(query.testRunId));
 
     let tag = _.find(this.state.currentTags, { id: id });
     if (tag && key) {
@@ -379,7 +379,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     const { query } = this.props;
 
     const options = _.map(
-      _.filter(Object.keys(K6QueryType), (k) => !_.isNaN(parseInt(k, 10))),
+      _.filter(Object.keys(K6QueryType), (k) => !_.isNaN(Number(k))),
       (item) => {
         return {
           label: toTitleCase(getTypeFromQueryTypeEnum(Number(item) as K6QueryType)),
