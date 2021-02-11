@@ -40,6 +40,7 @@ type QueryEditorState = {
 };
 
 enum SelectFieldType {
+  QUERY_TYPE,
   PROJECT,
   TESTS,
   TEST_RUNS,
@@ -95,22 +96,8 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   }
 
   async componentDidMount() {
-    const { query, datasource } = this.props;
-
-    query.qtype = query.qtype === null ? K6QueryType.METRIC : query.qtype;
-    query.projectId = query.projectId || '';
-    query.testId = query.testId || '';
-    query.testRunId = query.testRunId || '';
-
-    const resolvedProjectId = datasource.resolveVar(
-      query.projectId,
-      query.projectId ? Number(query.projectId) : undefined
-    );
-    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? Number(query.testId) : undefined);
-    const resolvedTestRunId = datasource.resolveVar(
-      query.testRunId,
-      query.testRunId ? Number(query.testRunId) : undefined
-    );
+    const { datasource } = this.props;
+    const [resolvedProjectId, resolvedTestId, resolvedTestRunId] = this.getResolvedFields();
 
     const projectList = _.flatten(await datasource.getAllProjects());
     const current: any = _.find(projectList, { id: resolvedProjectId });
@@ -130,29 +117,41 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   }
 
   async componentDidUpdate(prevProps: Props) {
-    const { query, datasource } = this.props;
-
-    const resolvedProjectId = datasource.resolveVar(
-      query.projectId,
-      query.projectId ? Number(query.projectId) : undefined
-    );
-    const resolvedTestId = datasource.resolveVar(query.testId, query.testId ? Number(query.testId) : undefined);
-    const resolvedTestRunId = datasource.resolveVar(
-      query.testRunId,
-      query.testRunId ? Number(query.testRunId) : undefined
-    );
+    const { query } = this.props;
+    const [resolvedProjectId, resolvedTestId, resolvedTestRunId] = this.getResolvedFields();
 
     if (resolvedProjectId !== undefined && query.projectId !== prevProps.query.projectId) {
-      const testList = await datasource.getTestsForProject(resolvedProjectId);
-      this.setState({ testList: testList, currentTest: null });
+      await this.fetchTestList(resolvedProjectId);
     }
+
     if (resolvedTestId !== undefined && query.testId !== prevProps.query.testId) {
-      const testRunList = await datasource.getTestRunsForTest(resolvedTestId);
-      this.setState({ testRunList: testRunList, currentTestRun: null });
+      await this.fetchTestRun(resolvedTestId);
     }
+
     if (resolvedTestRunId !== undefined && query.testRunId !== prevProps.query.testRunId) {
       await this.initTestRun(resolvedTestRunId);
     }
+  }
+
+  getResolvedFields() {
+    const { datasource, query } = this.props;
+    const projectId = datasource.resolveVar(query.projectId, query.projectId ? Number(query.projectId) : undefined);
+    const testId = datasource.resolveVar(query.testId, query.testId ? Number(query.testId) : undefined);
+    const testRunId = datasource.resolveVar(query.testRunId, query.testRunId ? Number(query.testRunId) : undefined);
+
+    return [projectId, testId, testRunId];
+  }
+
+  async fetchTestList(projectId: number) {
+    const { datasource } = this.props;
+    const testList = await datasource.getTestsForProject(projectId);
+    this.setState({ testList, currentTest: null });
+  }
+
+  async fetchTestRun(testId: number) {
+    const { datasource } = this.props;
+    const testRunList = await datasource.getTestRunsForTest(testId);
+    this.setState({ testRunList, currentTestRun: null });
   }
 
   async initTestRun(testRunId: number) {
@@ -178,6 +177,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
       currentMetric: metric ? metric : null,
       tagsList: tagsList,
     });
+
     if (currentTestRun && currentTestRun.started && currentTestRun.ended) {
       getLocationSrv().update({
         partial: true,
@@ -189,9 +189,9 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
   }
 
   onQueryTypeChange = (item: SelectableValue<string>) => {
-    const { query, onRunQuery } = this.props;
+    const { query, onRunQuery, onChange } = this.props;
     const qType = Number(item.value!);
-    this.props.onChange({
+    onChange({
       ...query,
       qtype: qType,
       projectId: '',
@@ -199,6 +199,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
       testRunId: '',
       metric: undefined,
     });
+
     if (qType !== K6QueryType.METRIC) {
       onRunQuery();
     }
@@ -231,6 +232,14 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     });
   };
 
+  /**
+   * @todo Condense/Split
+   * @todo Naming
+   * @param metricName
+   * @param tagName
+   * @param tagValues
+   * @param currentTags
+   */
   _getTagValuesForMetric(metricName: string, tagName: string, tagValues: string[], currentTags: K6SeriesTag[]) {
     const specialTags = ['url', 'method', 'status'];
     if (!_.includes(specialTags, tagName) || currentTags === []) {
@@ -401,20 +410,21 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   /**
    * Returns select data to be used with QuerySelect component
-   * @param {[]}list
+   * @param {[]} list
    * @param {string} queryValue
-   * @param {string} fieldName
-   * @param {function} valueCreator
-   * @returns [SelectableValue<string>, SelectableValue<string>[]]
+   * @param {string} [fieldName]
+   * @param {function} [valueCreator]
+   * @returns [SelectableValue<T>, SelectableValue<T>[]]
    */
-  getSelectData<T = any>(
+  getSelectData<T = string>(
     list: T[],
     queryValue: string,
-    fieldName: string,
-    valueCreator: (item: T) => SelectableValue<string>
+    fieldName: string = '',
+    valueCreator: (item: T) => SelectableValue<string> = (item: SelectableValue<string>) => item
   ): [SelectableValue<string> | undefined, SelectableValue[]] {
-    const fieldOptions = list.map(valueCreator);
-    const options = [{ label: fieldName, value: fieldName }, ...fieldOptions];
+    const fieldOptions =
+      typeof valueCreator === 'function' ? list.map(valueCreator) : [...(list as SelectableValue<string>[])];
+    const options = !!fieldName ? [{ label: fieldName, value: fieldName }, ...fieldOptions] : [...fieldOptions];
     const current = options.find((item) => item.value === queryValue);
 
     return [current, options];
@@ -422,11 +432,11 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   getSelectDataFor(fieldType: SelectFieldType) {
     const { query } = this.props;
-
     switch (fieldType) {
       case SelectFieldType.PROJECT:
+        const { projectList } = this.state;
         return this.getSelectData<K6Project>(
-          this.state.projectList,
+          projectList,
           String(query.projectId),
           FieldVariableName.PROJECT,
           (item) => ({
@@ -434,15 +444,21 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
             value: String(item.id),
           })
         );
+
       default:
-        return [];
+        console.log('DEFAULT');
+        return [undefined, []];
     }
   }
 
   renderProjectList() {
-    const [current, options] = this.getSelectDataFor(SelectFieldType.PROJECT);
     return (
-      <QuerySelect label="Project" onChange={this.onProjectChange} options={options} value={current} allowCustomValue />
+      <QuerySelect
+        label="Project"
+        onChange={this.onProjectChange}
+        data={this.getSelectDataFor(SelectFieldType.PROJECT)}
+        allowCustomValue
+      />
     );
   }
 
@@ -451,21 +467,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     const { testList } = this.state;
     const queryValue = String(query.testId);
 
-    const [current, options] = this.getSelectData<K6Test>(testList, queryValue, '$test', (item) => ({
+    const data = this.getSelectData<K6Test>(testList, queryValue, '$test', (item) => ({
       label: item.name,
       value: String(item.id),
     }));
 
-    return (
-      <QuerySelect
-        label="Test"
-        onChange={this.onTestChange}
-        options={options}
-        value={current}
-        width={4}
-        allowCustomValue
-      />
-    );
+    return <QuerySelect label="Test" onChange={this.onTestChange} data={data} width={4} allowCustomValue />;
   }
 
   renderTestRunList() {
@@ -473,20 +480,12 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     const { testRunList } = this.state;
     const queryValue = String(query.testRunId);
 
-    const [current, options] = this.getSelectData<K6TestRun>(testRunList, queryValue, '$testrun', (item) => ({
+    const data = this.getSelectData<K6TestRun>(testRunList, queryValue, '$testrun', (item) => ({
       label: `${item.created.toLocaleString()} (vus: ${item.vus}, duration: ${item.duration})`,
       value: String(item.id),
     }));
 
-    return (
-      <QuerySelect
-        label="Test runs"
-        onChange={this.onTestRunChange}
-        options={options}
-        value={current}
-        allowCustomValue
-      />
-    );
+    return <QuerySelect label="Test runs" onChange={this.onTestRunChange} data={data} allowCustomValue />;
   }
 
   _metricIdToMetricType(metricId: string) {
@@ -505,7 +504,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
     const current = query.metric ? options.find((item) => item.value === query.metric) : undefined;
 
-    return <QuerySelect label="Metric" onChange={this.onMetricChange} options={options} value={current} />;
+    return <QuerySelect label="Metric" onChange={this.onMetricChange} data={[current, options]} />;
   }
 
   renderAggregationList() {

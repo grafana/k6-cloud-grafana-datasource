@@ -4,20 +4,19 @@ import React from 'react';
 
 interface ProjectSelectProps {
   label: string;
-  value: SelectableValue<string> | undefined;
-  options: SelectableValue<string>[];
   onChange: (item: SelectableValue<string>) => void;
   width?: number;
   allowCustomValue?: boolean;
+  data: any[];
 }
 export function QuerySelect({
-  value,
-  options,
+  data = [undefined, []],
   onChange,
   label,
   width = 6,
   allowCustomValue = false,
 }: ProjectSelectProps) {
+  const [value, options] = data;
   return (
     <div className="gf-form">
       <InlineFormLabel className="query-keyword" width={width}>

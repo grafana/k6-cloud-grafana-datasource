@@ -761,7 +761,7 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
   }
 
   resolveVar(target: string, defaultValue?: number) {
-    const resolved = getTemplateSrv().replace(target).match(VAR_QUERY_ID_REGEX);
+    const resolved = getTemplateSrv().replace(target)?.match(VAR_QUERY_ID_REGEX);
     return resolved ? Number(resolved[1]) : defaultValue;
   }
 }
