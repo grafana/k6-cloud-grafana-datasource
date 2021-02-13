@@ -1,26 +1,33 @@
 import _ from 'lodash';
 import React, { PureComponent } from 'react';
 
-import { Icon, InlineFormLabel, Select } from '@grafana/ui';
+import { Icon, InlineFormLabel } from '@grafana/ui';
 import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { getLocationSrv } from '@grafana/runtime';
 
-import { TagSelector } from './TagSelector';
-import { DataSource } from '../DataSource';
+import { TagSelector } from '../TagSelector';
+import { DataSource } from 'DataSource';
 import {
   K6CloudDataSourceOptions,
   K6CloudQuery,
   K6Metric,
   K6MetricType,
+  K6MetricTypeName,
   K6Project,
   K6QueryType,
   K6SeriesTag,
   K6Test,
   K6TestRun,
-} from '../types';
-import { getMetricFromMetricNameAndTags, getTypeFromMetricEnum, getTypeFromQueryTypeEnum, toTitleCase } from '../utils';
+} from 'types';
+import { getMetricFromMetricNameAndTags, getMetricTypeById, getTypeFromMetricEnum } from 'utils';
 
-import { QuerySelect } from './QuerySelect';
+import { AGGREGATION_TYPES } from './constants';
+import { ProjectSelect } from './ProjectSelect';
+import { QueryTypeSelect } from './QueryTypeSelect';
+import { TestSelect } from './TestSelect';
+import { TestRunSelect } from './TestRunSelect';
+import { MetricSelect } from './MetricSelect';
+import { AggregationSelect } from './AggregationSelect';
 
 type Props = QueryEditorProps<DataSource, K6CloudQuery, K6CloudDataSourceOptions>;
 
@@ -37,38 +44,6 @@ type QueryEditorState = {
   currentTags: K6SeriesTag[];
   tagsList: string[];
   tagsValues: Map<string, string[]>;
-};
-
-enum SelectFieldType {
-  QUERY_TYPE,
-  PROJECT,
-  TESTS,
-  TEST_RUNS,
-}
-
-enum FieldVariableName {
-  PROJECT = '$project',
-  TESTS = '$tests',
-  TEST_RUNS = '$testruns',
-}
-
-const AGGREGATION_TYPES = {
-  trend: {
-    methods: ['avg', 'min', 'max', 'mean', 'median', 'std', 'p(75)', 'p(90)', 'p(95)', 'p(99)', 'p(99.9)', 'p(99.99)'],
-    default: 'avg',
-  },
-  counter: {
-    methods: ['count', 'rps'],
-    default: 'count',
-  },
-  rate: {
-    methods: ['rate'],
-    default: 'rate',
-  },
-  gauge: {
-    methods: ['value'],
-    default: 'value',
-  },
 };
 
 export class QueryEditor extends PureComponent<Props, QueryEditorState> {
@@ -299,18 +274,21 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   onMetricChange = (item: SelectableValue<string>) => {
     const { onChange, query, onRunQuery } = this.props;
+    const { metricsList } = this.state;
     const metricName = item.value!;
-    const metric = getMetricFromMetricNameAndTags(this.state.metricsList, metricName, query.tags);
-    const metricType = this._metricIdToMetricType(metric!.id);
-    const metricTypeAsStr = getTypeFromMetricEnum(metricType !== undefined ? metricType : K6MetricType.TREND);
+    const metric = getMetricFromMetricNameAndTags(metricsList, metricName, query.tags);
+    const metricType = this.currentMetricType;
+
     onChange({
       ...query,
       metric: metric?.name,
-      aggregation: AGGREGATION_TYPES[metricTypeAsStr].default,
+      aggregation: AGGREGATION_TYPES[metricType].default,
     });
+
     this.setState({
       currentMetric: metric ? metric : null,
     });
+
     onRunQuery();
   };
 
@@ -384,169 +362,9 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     this.setState({ currentTags: clone });
   };
 
-  renderQueryTypeList() {
-    const { query } = this.props;
-
-    const options = _.map(
-      _.filter(Object.keys(K6QueryType), (k) => !_.isNaN(Number(k))),
-      (item) => {
-        return {
-          label: toTitleCase(getTypeFromQueryTypeEnum(Number(item) as K6QueryType)),
-          value: item,
-        };
-      }
-    );
-    const current = options.find((item) => item.value === String(query.qtype));
-
-    return (
-      <div className="gf-form">
-        <InlineFormLabel className="query-keyword" width={6}>
-          Query Type
-        </InlineFormLabel>
-        <Select options={options} value={current} onChange={this.onQueryTypeChange} />
-      </div>
-    );
-  }
-
-  /**
-   * Returns select data to be used with QuerySelect component
-   * @param {[]} list
-   * @param {string} queryValue
-   * @param {string} [fieldName]
-   * @param {function} [valueCreator]
-   * @returns [SelectableValue<T>, SelectableValue<T>[]]
-   */
-  getSelectData<T = string>(
-    list: T[],
-    queryValue: string,
-    fieldName: string = '',
-    valueCreator: (item: T) => SelectableValue<string> = (item: SelectableValue<string>) => item
-  ): [SelectableValue<string> | undefined, SelectableValue[]] {
-    const fieldOptions =
-      typeof valueCreator === 'function' ? list.map(valueCreator) : [...(list as SelectableValue<string>[])];
-    const options = !!fieldName ? [{ label: fieldName, value: fieldName }, ...fieldOptions] : [...fieldOptions];
-    const current = options.find((item) => item.value === queryValue);
-
-    return [current, options];
-  }
-
-  getSelectDataFor(fieldType: SelectFieldType) {
-    const { query } = this.props;
-    switch (fieldType) {
-      case SelectFieldType.PROJECT:
-        const { projectList } = this.state;
-        return this.getSelectData<K6Project>(
-          projectList,
-          String(query.projectId),
-          FieldVariableName.PROJECT,
-          (item) => ({
-            label: `${item.organizationName} / ${item.name}`,
-            value: String(item.id),
-          })
-        );
-
-      default:
-        console.log('DEFAULT');
-        return [undefined, []];
-    }
-  }
-
-  renderProjectList() {
-    return (
-      <QuerySelect
-        label="Project"
-        onChange={this.onProjectChange}
-        data={this.getSelectDataFor(SelectFieldType.PROJECT)}
-        allowCustomValue
-      />
-    );
-  }
-
-  renderTestList() {
-    const { query } = this.props;
-    const { testList } = this.state;
-    const queryValue = String(query.testId);
-
-    const data = this.getSelectData<K6Test>(testList, queryValue, '$test', (item) => ({
-      label: item.name,
-      value: String(item.id),
-    }));
-
-    return <QuerySelect label="Test" onChange={this.onTestChange} data={data} width={4} allowCustomValue />;
-  }
-
-  renderTestRunList() {
-    const { query } = this.props;
-    const { testRunList } = this.state;
-    const queryValue = String(query.testRunId);
-
-    const data = this.getSelectData<K6TestRun>(testRunList, queryValue, '$testrun', (item) => ({
-      label: `${item.created.toLocaleString()} (vus: ${item.vus}, duration: ${item.duration})`,
-      value: String(item.id),
-    }));
-
-    return <QuerySelect label="Test runs" onChange={this.onTestRunChange} data={data} allowCustomValue />;
-  }
-
-  _metricIdToMetricType(metricId: string) {
-    return _.find(this.state.metricsList, { id: metricId })?.type;
-  }
-
-  renderMetricsList() {
-    const { query } = this.props;
-    const { metricNameList } = this.state;
-    const options = metricNameList.map((item) => {
-      return {
-        label: item,
-        value: item,
-      };
-    });
-
-    const current = query.metric ? options.find((item) => item.value === query.metric) : undefined;
-
-    return <QuerySelect label="Metric" onChange={this.onMetricChange} data={[current, options]} />;
-  }
-
-  renderAggregationList() {
-    const { query } = this.props;
-    const metric = this.state.currentMetric;
-    let metricTypeDef = AGGREGATION_TYPES[getTypeFromMetricEnum(K6MetricType.TREND)].default;
-    let options: Array<SelectableValue<string>> = [];
-    if (metric) {
-      const metricType = this._metricIdToMetricType(metric!.id);
-      const metricTypeAsStr = getTypeFromMetricEnum(metricType !== undefined ? metricType : K6MetricType.TREND);
-      metricTypeDef = AGGREGATION_TYPES[metricTypeAsStr].default;
-      const aggTypesForMetricType = AGGREGATION_TYPES[metricTypeAsStr].methods;
-      options = aggTypesForMetricType.map((item) => {
-        let label = item;
-        if (_.includes(['data_received', 'data_sent'], query.metric)) {
-          if (label === 'count') {
-            label = 'bytes';
-          } else if (label === 'rps') {
-            label = 'bytes/s';
-          }
-        } else if (_.includes(['vus', 'vus_max'], query.metric)) {
-          label = 'VUs';
-        }
-        return {
-          label: label,
-          value: item,
-        };
-      });
-    }
-
-    const current = options.find(
-      (item) => item.value === (query.aggregation !== '' ? query.aggregation : metricTypeDef)
-    );
-
-    return (
-      <div className="gf-form">
-        <InlineFormLabel className="query-keyword" width={6}>
-          Aggregation
-        </InlineFormLabel>
-        <Select options={options} value={current} onChange={this.onAggregationChange} />
-      </div>
-    );
+  get currentMetricType(): K6MetricTypeName {
+    const { currentMetric: metric, metricsList = [] } = this.state;
+    return metric ? getMetricTypeById(metric.id, metricsList) : getTypeFromMetricEnum(K6MetricType.TREND);
   }
 
   renderTagList() {
@@ -586,22 +404,37 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
 
   render() {
     const query = this.props.query;
-    const { qtype, projectId, testId, testRunId, metric } = query;
+    const { qtype, projectId, testId, testRunId, metric, aggregation } = query;
+    const { projectList, testList, testRunList, metricNameList } = this.state;
+
+    const showProjectSelect = qtype !== K6QueryType.TEST_RUNS;
+    const showTestSelect = showProjectSelect && projectId !== '';
+    const showTestRunSelect = showTestSelect && testId !== '';
+    const showMetricSelect = qtype === K6QueryType.METRIC && testRunId !== '';
 
     return (
       <div>
         <div className="gf-form-inline">
-          {this.renderQueryTypeList()}
-          {qtype !== K6QueryType.TEST_RUNS ? this.renderProjectList() : null}
-          {qtype !== K6QueryType.TEST_RUNS && projectId !== '' ? this.renderTestList() : null}
-          {qtype !== K6QueryType.TEST_RUNS && testId !== '' ? this.renderTestRunList() : null}
+          <QueryTypeSelect value={qtype} onChange={this.onQueryTypeChange} />
+          {showProjectSelect && (
+            <ProjectSelect value={projectId} projects={projectList} onChange={this.onProjectChange} />
+          )}
+          {showTestSelect && <TestSelect tests={testList} value={testId} onChange={this.onTestChange} />}
+          {showTestRunSelect && (
+            <TestRunSelect testRuns={testRunList} value={testRunId} onChange={this.onTestRunChange} />
+          )}
         </div>
-        {qtype === K6QueryType.METRIC && testRunId !== '' ? (
+        {showMetricSelect && (
           <div className="gf-form-inline">
-            {testRunId !== '' ? this.renderMetricsList() : null}
-            {metric ? this.renderAggregationList() : null}
+            <MetricSelect metrics={metricNameList} value={metric} onChange={this.onMetricChange} />
+            <AggregationSelect
+              metric={metric}
+              metricType={this.currentMetricType}
+              value={aggregation}
+              onChange={this.onAggregationChange}
+            />
           </div>
-        ) : null}
+        )}
         {qtype === K6QueryType.METRIC && testRunId !== '' && metric ? (
           <div>
             <div className="gf-form">

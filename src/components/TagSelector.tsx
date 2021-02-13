@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { Icon, InlineFormLabel, Select } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 
-import { K6SeriesTag } from '../types';
+import { K6SeriesTag } from 'types';
 
 type TagSelectorStateProps = {
   tag: K6SeriesTag;

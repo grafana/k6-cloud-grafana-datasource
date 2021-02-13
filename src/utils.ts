@@ -3,6 +3,7 @@ import _ from 'lodash';
 import {
   K6Metric,
   K6MetricType,
+  K6MetricTypeName,
   K6QueryType,
   K6TestRunResultStatus,
   K6TestRunStatus,
@@ -90,7 +91,7 @@ export const getEnumFromMetricType = (type: string) => {
   }
 };
 
-export const getTypeFromMetricEnum = (type: K6MetricType) => {
+export const getTypeFromMetricEnum = (type: K6MetricType): K6MetricTypeName => {
   switch (type) {
     case K6MetricType.COUNTER:
       return 'counter';
@@ -164,3 +165,11 @@ export const toTitleCase = (s: string) => {
     return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
   });
 };
+
+export function getMetricTypeEnumById(id: string, metricList: K6Metric[] = []): K6MetricType {
+  return metricList.find((metric) => metric.id === id)?.type ?? K6MetricType.TREND;
+}
+
+export function getMetricTypeById(id: string, metricList: K6Metric[] = []): K6MetricTypeName {
+  return getTypeFromMetricEnum(getMetricTypeEnumById(id, metricList));
+}

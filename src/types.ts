@@ -126,6 +126,8 @@ export enum K6MetricType {
   TREND,
 }
 
+export type K6MetricTypeName = 'counter' | 'gauge' | 'rate' | 'trend';
+
 export interface K6Url {
   id: string;
   projectId: number;

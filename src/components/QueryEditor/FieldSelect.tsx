@@ -1,22 +1,35 @@
+import React, { useCallback, useMemo } from 'react';
 import { SelectableValue } from '@grafana/data';
 import { InlineFormLabel, Select } from '@grafana/ui';
-import React from 'react';
 
-interface ProjectSelectProps {
+interface FieldSelectProps {
   label: string;
   onChange: (item: SelectableValue<string>) => void;
   width?: number;
   allowCustomValue?: boolean;
-  data: any[];
+  options: SelectableValue<string>[];
+  value: string;
 }
-export function QuerySelect({
-  data = [undefined, []],
+
+export function FieldSelect({
+  options,
+  value,
   onChange,
   label,
   width = 6,
   allowCustomValue = false,
-}: ProjectSelectProps) {
-  const [value, options] = data;
+}: FieldSelectProps) {
+  const selected = useMemo(() => {
+    return options.find((option) => option.value === value);
+  }, [value]);
+
+  const handleCreateOption = useCallback(
+    (customValue: string) => {
+      allowCustomValue && onChange({ value: customValue });
+    },
+    [onChange, allowCustomValue]
+  );
+
   return (
     <div className="gf-form">
       <InlineFormLabel className="query-keyword" width={width}>
@@ -24,12 +37,10 @@ export function QuerySelect({
       </InlineFormLabel>
       <Select
         options={options}
-        value={value}
+        value={selected}
         onChange={onChange}
         allowCustomValue={allowCustomValue}
-        onCreateOption={(customValue) => {
-          onChange({ value: customValue });
-        }}
+        onCreateOption={handleCreateOption}
       />
     </div>
   );
