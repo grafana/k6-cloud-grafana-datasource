@@ -7,7 +7,7 @@ interface FieldSelectProps {
   onChange: (item: SelectableValue<string>) => void;
   width?: number;
   allowCustomValue?: boolean;
-  options: SelectableValue<string>[];
+  options: Array<SelectableValue<string>>;
   value: string;
 }
 
@@ -21,7 +21,7 @@ export function FieldSelect({
 }: FieldSelectProps) {
   const selected = useMemo(() => {
     return options.find((option) => option.value === value);
-  }, [value]);
+  }, [value, options]);
 
   const handleCreateOption = useCallback(
     (customValue: string) => {

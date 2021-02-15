@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { K6Project } from 'types';
 import { SelectableValue } from '@grafana/data';
 
-interface ProjectSelect {
+interface ProjectSelectProps {
   projects: K6Project[];
   value: string;
   onChange: (value: SelectableValue<string>) => void;
@@ -11,8 +11,8 @@ interface ProjectSelect {
 
 const PROJECT_VARIABLE = '$project';
 
-export function ProjectSelect({ projects = [], value = '', onChange }: ProjectSelect) {
-  const options: SelectableValue<string>[] = useMemo(() => {
+export function ProjectSelect({ projects = [], value = '', onChange }: ProjectSelectProps) {
+  const options: Array<SelectableValue<string>> = useMemo(() => {
     return [
       { label: PROJECT_VARIABLE, value: PROJECT_VARIABLE },
       ...projects.map((project: K6Project) => ({

@@ -12,7 +12,7 @@ const QUERY_TYPE_MAP: { [key in K6QueryType]: string } = {
   [K6QueryType.THRESHOLDS]: 'Thresholds',
 };
 
-const options: SelectableValue<string>[] = Object.entries(QUERY_TYPE_MAP).map(([key, value]) => ({
+const options: Array<SelectableValue<string>> = Object.entries(QUERY_TYPE_MAP).map(([key, value]) => ({
   label: toTitleCase(value),
   value: key,
 }));

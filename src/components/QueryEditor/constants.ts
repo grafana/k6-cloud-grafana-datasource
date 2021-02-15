@@ -21,7 +21,7 @@ type GaugeMethods = 'value';
 export type AggregationMethods = Array<TrendMethods | CountMethods | RateMethods | GaugeMethods>;
 
 export interface AggregationType<T> {
-  methods: Array<T>;
+  methods: T[];
   default: T;
 }
 

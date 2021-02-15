@@ -45,7 +45,7 @@ export const AggregationSelect: FC<AggregationSelectProps> = ({
         value: method,
       };
     });
-  }, [typeConfig]);
+  }, [typeConfig, metric]);
 
   return (
     <FieldSelect
