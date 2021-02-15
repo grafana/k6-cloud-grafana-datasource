@@ -47,7 +47,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
         <div className="gf-form-inline">
           <div className="gf-form">
             <SecretFormField
-              isConfigured={(secureJsonFields && secureJsonFields.apiToken) as boolean}
+              isConfigured={secureJsonFields && secureJsonFields.apiToken}
               value={secureJsonData.apiToken || ''}
               label="API Token"
               placeholder="Your k6 Cloud API Token"
