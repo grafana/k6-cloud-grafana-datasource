@@ -4,7 +4,7 @@ import { SelectableValue } from '@grafana/data';
 import { FieldSelect } from './FieldSelect';
 import { K6QueryType } from 'types';
 
-const QUERY_TYPE_MAP: { [key in K6QueryType]: string } = {
+export const QUERY_TYPE_MAP: { [key in K6QueryType]: string } = {
   [K6QueryType.TEST_RUNS]: 'Test Runs',
   [K6QueryType.METRIC]: 'Metric',
   [K6QueryType.URLS]: 'URLs',
@@ -12,7 +12,7 @@ const QUERY_TYPE_MAP: { [key in K6QueryType]: string } = {
   [K6QueryType.THRESHOLDS]: 'Thresholds',
 };
 
-const options: Array<SelectableValue<string>> = Object.entries(QUERY_TYPE_MAP).map(([key, value]) => ({
+export const queryTypeOptions: Array<SelectableValue<string>> = Object.entries(QUERY_TYPE_MAP).map(([key, value]) => ({
   label: toTitleCase(value),
   value: key,
 }));
@@ -24,5 +24,13 @@ interface QueryTypeSelectProps {
 }
 
 export function QueryTypeSelect({ value, onChange, width = 6 }: QueryTypeSelectProps) {
-  return <FieldSelect label="Query Type" options={options} value={String(value)} width={width} onChange={onChange} />;
+  return (
+    <FieldSelect
+      label="Query Type"
+      options={queryTypeOptions}
+      value={String(value)}
+      width={width}
+      onChange={onChange}
+    />
+  );
 }

@@ -7,7 +7,7 @@ import { K6CloudDataSourceOptions, K6CloudSecureJsonData } from 'types';
 
 const { SecretFormField } = LegacyForms;
 
-interface Props extends DataSourcePluginOptionsEditorProps<K6CloudDataSourceOptions> {}
+interface Props extends DataSourcePluginOptionsEditorProps<K6CloudDataSourceOptions, K6CloudSecureJsonData> {}
 
 interface State {}
 
@@ -40,8 +40,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
 
   render() {
     const { options } = this.props;
-    const { secureJsonFields } = options;
-    const secureJsonData = (options.secureJsonData || {}) as K6CloudSecureJsonData;
+    const { secureJsonFields, secureJsonData = {} } = options;
 
     return (
       <div className="gf-form-group">

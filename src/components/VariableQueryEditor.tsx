@@ -1,11 +1,12 @@
-import _ from 'lodash';
 import React, { PureComponent } from 'react';
 
 import { LegacyForms } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 
-import { K6VariableQuery, K6VariableQueryType } from '../types';
-import { getTypeFromVariableQueryEnum } from '../utils';
+import { K6VariableQuery, K6VariableQueryType } from 'types';
+import { getTypeFromVariableQueryEnum } from 'utils';
+
+import { queryTypeOptions as options } from './QueryEditor/QueryTypeSelect';
 
 const { Select } = LegacyForms;
 
@@ -50,30 +51,19 @@ export class VariableQueryEditor extends PureComponent<VariableQueryProps, State
   };
 
   render() {
-    const options = _.map(
-      _.filter(Object.keys(K6VariableQueryType), (k) => !_.isNaN(Number(k))),
-      (item) => {
-        return {
-          label: getTypeFromVariableQueryEnum(Number(item) as K6VariableQueryType),
-          value: item,
-        };
-      }
-    );
     const current = options.find((item) => item.value === String(this.state.query.qtype));
 
     return (
-      <>
-        <div className="gf-form">
-          <span className="gf-form-label width-10">Query</span>
-          <Select
-            options={options}
-            value={current}
-            allowCustomValue={false}
-            onBlur={this.saveQuery}
-            onChange={this.onQueryTypeChange}
-          />
-        </div>
-      </>
+      <div className="gf-form">
+        <span className="gf-form-label width-10">Query</span>
+        <Select
+          options={options}
+          value={current}
+          allowCustomValue={false}
+          onBlur={this.saveQuery}
+          onChange={this.onQueryTypeChange}
+        />
+      </div>
     );
   }
 }
