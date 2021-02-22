@@ -36,6 +36,7 @@ export function FieldSelect({
         {label}
       </InlineFormLabel>
       <Select
+        menuPlacement="bottom"
         options={options}
         value={selected}
         onChange={onChange}
