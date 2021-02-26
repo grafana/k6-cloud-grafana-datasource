@@ -142,18 +142,14 @@ export const getUnitFromMetric = (metric: K6Metric, aggregation?: string) => {
   }
 };
 
-export function getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
-  return o[propertyName]; // o[propertyName] is of type T[K]
-}
-
-export const reduceByObjectProp = (listOfObjects: any[], propName: any) =>
-  _.reduce(
+export const reduceByObjectProp = <T, K extends keyof T>(listOfObjects: T[], propName: K): Array<T[K]> =>
+  _.reduce<T, Array<T[K]>>(
     listOfObjects,
     function (a, i) {
-      a.push(getProperty(i, propName));
+      a.push(i[propName]);
       return a;
     },
-    [] as any[]
+    []
   );
 
 export const toTitleCase = (s: string) => {
