@@ -217,7 +217,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
    */
   _getTagValuesForMetric(metricName: string, tagName: string, tagValues: string[], currentTags: K6SeriesTag[]) {
     const specialTags = ['url', 'method', 'status'];
-    if (!_.includes(specialTags, tagName) || currentTags === []) {
+    if (!specialTags.includes(tagName) || (currentTags && currentTags.length === 0)) {
       return tagValues;
     }
     return _.uniq(
