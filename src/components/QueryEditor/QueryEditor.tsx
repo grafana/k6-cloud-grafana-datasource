@@ -367,6 +367,9 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
     return metric ? getMetricTypeById(metric.id, metricsList) : getTypeFromMetricEnum(K6MetricType.TREND);
   }
 
+  /**
+   * @todo Move to its own component
+   */
   renderTagList() {
     const query = this.props.query;
     const tagKeys: string[] = this.state.tagsList;
@@ -390,16 +393,6 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
         />
       );
     });
-  }
-
-  renderTagInsertButton() {
-    return (
-      <div className="gf-form" onClick={this.onTagInsertClick}>
-        <a className="gf-form-label query-part">
-          <Icon name="plus" />
-        </a>
-      </div>
-    );
   }
 
   render() {
@@ -443,7 +436,13 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
               </InlineFormLabel>
             </div>
             {this.renderTagList()}
-            <div className="gf-form">{this.renderTagInsertButton()}</div>
+            <div className="gf-form">
+              <div className="gf-form" onClick={this.onTagInsertClick}>
+                <a className="gf-form-label query-part">
+                  <Icon name="plus" />
+                </a>
+              </div>
+            </div>
           </div>
         ) : null}
       </div>
