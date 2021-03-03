@@ -17,7 +17,7 @@ export const getMetricFromMetricNameAndTags = (
 ) => {
   return _.find(_.filter(metricsList, { name: metricName }), (item) => {
     const tagMatches = _.map(_.pick(Object.fromEntries(tags || []), ['url', 'method', 'status']), (value, key) => {
-      return item.tags?.has(key) ? item.tags?.get(key) === value : false;
+      return item.tags instanceof Map && item.tags?.has(key) ? item.tags?.get(key) === value : false;
     });
     return tagMatches.length === 0 || _.every(tagMatches);
   });
