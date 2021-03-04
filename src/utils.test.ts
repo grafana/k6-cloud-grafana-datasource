@@ -88,7 +88,7 @@ describe('getTypeFromMetricEnum', () => {
 });
 
 describe('getUnitFromMetric', () => {
-  function getMockMetric(type: K6MetricType, name: string = '__DEFAULT__', contains: string = '__DEFAULT__') {
+  function getMockMetric(type: K6MetricType, name = '__DEFAULT__', contains = '__DEFAULT__') {
     return ({ type, name, contains } as unknown) as K6Metric;
   }
 
@@ -119,7 +119,7 @@ describe('getUnitFromMetric', () => {
 });
 
 describe('reduceByObjectProp', () => {
-  const listOfObjects: { [key: string]: any }[] = [
+  const listOfObjects: Array<{ [key: string]: any }> = [
     { foo: 1, bar: false, baz: 'Hello' },
     { foo: 2, bar: true, baz: 'World' },
     { foo: 3, bar: false, baz: 'this' },
