@@ -1,5 +1,5 @@
 # k6 Cloud Grafana Data Source Plugin
-[![CircleCI](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master)
+[![CircleCI](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master.svg?style=svg&circle-token=3bac257ec661964a53b783650c5a31e190098c8e)](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master)
 
 Thi Grafana data source plugin allows you to view your tests results stored in k6 Cloud in Grafana.
 
