@@ -48,11 +48,19 @@ If you're self-hosting a Grafana installation you can follow the steps below to 
 
 1. Install dependencies
 ```BASH
+# Yarn
 yarn install
+
+# npm
+npm install
 ```
 2. Build plugin in production mode
 ```BASH
+# Yarn
 yarn build
+
+#npm
+npm run build
 ```
 3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
 ```BASH
