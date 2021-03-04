@@ -4,7 +4,7 @@ import {
   K6Metric,
   K6MetricType,
   K6MetricTypeName,
-  K6QueryType,
+  // K6QueryType,
   K6TestRunResultStatus,
   K6TestRunStatus,
   K6VariableQueryType,
@@ -104,23 +104,6 @@ export const getTypeFromMetricEnum = (type: K6MetricType): K6MetricTypeName => {
   }
 };
 
-export const getTypeFromQueryTypeEnum = (type: K6QueryType) => {
-  switch (type) {
-    case K6QueryType.METRIC:
-      return 'metrics';
-    case K6QueryType.TEST_RUNS:
-      return 'test runs';
-    case K6QueryType.URLS:
-      return 'urls';
-    case K6QueryType.CHECKS:
-      return 'checks';
-    case K6QueryType.THRESHOLDS:
-      return 'thresholds';
-    default:
-      return 'unknown';
-  }
-};
-
 export const getUnitFromMetric = (metric: K6Metric, aggregation?: string) => {
   switch (metric.type) {
     case K6MetricType.COUNTER:
@@ -143,14 +126,9 @@ export const getUnitFromMetric = (metric: K6Metric, aggregation?: string) => {
 };
 
 export const reduceByObjectProp = <T, K extends keyof T>(listOfObjects: T[], propName: K): Array<T[K]> =>
-  _.reduce<T, Array<T[K]>>(
-    listOfObjects,
-    function (a, i) {
-      a.push(i[propName]);
-      return a;
-    },
-    []
-  );
+  listOfObjects.reduce((accumulator: Array<T[K]>, item: T) => {
+    return [...accumulator, item[propName]];
+  }, []);
 
 export const toTitleCase = (s: string) => {
   return s.toLowerCase().replace(/\w\S*/g, function (t: string) {

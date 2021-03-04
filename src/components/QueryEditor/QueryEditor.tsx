@@ -383,6 +383,7 @@ export class QueryEditor extends PureComponent<Props, QueryEditorState> {
           this.state.currentTags
         );
       }
+
       return (
         <TagSelector
           tag={item}
