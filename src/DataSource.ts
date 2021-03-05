@@ -177,11 +177,24 @@ export class DataSource extends DataSourceApi<K6CloudQuery, K6CloudDataSourceOpt
   }
 
   async testDatasource() {
-    // Implement a health check for your data source.
-    return {
-      status: 'success',
-      message: 'Success',
-    };
+    return getBackendSrv()
+      .datasourceRequest({
+        method: 'GET',
+        url: `${this.url}/base/v3/organizations`,
+        requestId: 'my-plugin-v3-accounts-me',
+      })
+      .then(() => {
+        return {
+          status: 'success',
+          message: 'Authentication successful',
+        };
+      })
+      .catch((error) => {
+        return {
+          status: 'error',
+          message: error?.data?.error?.message ?? 'Could not verify API Token',
+        };
+      });
   }
 
   convertTestRunsToFields(testRuns: K6TestRun[]) {

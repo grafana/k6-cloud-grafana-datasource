@@ -906,10 +906,35 @@
     rxjs "6.6.3"
     xss "1.0.6"
 
+"@grafana/data@7.4.3":
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-7.4.3.tgz#b19a6a767e0be92e9a3d49d6441d2b056eefe944"
+  integrity sha512-zYpqNVtcAbJnY9KiW2bYH9fAu5H91+SC5W926KCc4ZKwT5I/B/uAvl1TwT3pLF1w8bMsuotrNorWQOFSk36Fbg==
+  dependencies:
+    "@braintree/sanitize-url" "4.0.0"
+    "@types/d3-interpolate" "^1.3.1"
+    apache-arrow "0.16.0"
+    eventemitter3 "4.0.7"
+    lodash "4.17.20"
+    marked "1.2.2"
+    rxjs "6.6.3"
+    xss "1.0.6"
+
 "@grafana/e2e-selectors@7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-7.4.0.tgz#f286dab307b26e6b0628a1d5e9907e3943c38ed3"
   integrity sha512-RCAXLOTUlO8nWALo1Wnl0pTkZYzUGnBV6RuetwEDaRkfZEEKXn3F1OerzF5iJWFsdFJvVehCZ7sFYOPmnEl/gg==
+  dependencies:
+    "@grafana/tsconfig" "^1.0.0-rc1"
+    commander "5.0.0"
+    execa "4.0.0"
+    typescript "4.1.2"
+    yaml "^1.8.3"
+
+"@grafana/e2e-selectors@7.4.3":
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-7.4.3.tgz#e86aeea9dd7f34252f210acfc9dd7814e4a8d42d"
+  integrity sha512-ojQOeclSZboi7hj/kTMDHP94A/Ac1yAaJnDuSvVyc098JP0KaaNaJAgJljjIZLVVC53B6A3p4PGpJPWxAsQUWw==
   dependencies:
     "@grafana/tsconfig" "^1.0.0-rc1"
     commander "5.0.0"
@@ -933,13 +958,13 @@
     prettier "2.2.1"
     typescript "4.0.2"
 
-"@grafana/runtime@^7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@grafana/runtime/-/runtime-7.4.0.tgz#c097adcdb151efd4211a4fc2bd91598c9cd7e627"
-  integrity sha512-ug2FPtzlEL4CykmrVp1Cnp6066ndzlMP8x/+rHNK7RR3HbS0ju2c+t6iq0vwU6605dwL71uOC+NOUuNIyZtYyg==
+"@grafana/runtime@^7.4.3":
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/@grafana/runtime/-/runtime-7.4.3.tgz#fbec723c923c73306fa8940aeda19190702f0274"
+  integrity sha512-tz8Q870O8Mw4n/IZCoH4LJb7GCmJkSIah17xVWXoZKtTL/lByqB8jbBOKf91esefMSc0DDSxL3jkOgXoLM8FiA==
   dependencies:
-    "@grafana/data" "7.4.0"
-    "@grafana/ui" "7.4.0"
+    "@grafana/data" "7.4.3"
+    "@grafana/ui" "7.4.3"
     systemjs "0.20.19"
     systemjs-plugin-css "0.1.37"
 
@@ -1066,6 +1091,59 @@
     "@emotion/core" "^10.0.27"
     "@grafana/data" "7.4.0"
     "@grafana/e2e-selectors" "7.4.0"
+    "@grafana/slate-react" "0.22.9-grafana"
+    "@grafana/tsconfig" "^1.0.0-rc1"
+    "@iconscout/react-unicons" "1.1.4"
+    "@popperjs/core" "2.5.4"
+    "@sentry/browser" "5.25.0"
+    "@testing-library/jest-dom" "5.11.9"
+    "@torkelo/react-select" "3.0.8"
+    "@types/hoist-non-react-statics" "3.3.1"
+    "@types/react-beautiful-dnd" "12.1.2"
+    "@types/react-color" "3.0.1"
+    "@types/react-select" "3.0.8"
+    "@types/react-table" "7.0.12"
+    "@types/slate" "0.47.1"
+    "@types/slate-react" "0.22.5"
+    classnames "2.2.6"
+    d3 "5.15.0"
+    emotion "10.0.27"
+    hoist-non-react-statics "3.3.2"
+    immutable "3.8.2"
+    jquery "3.5.1"
+    lodash "4.17.20"
+    moment "2.24.0"
+    monaco-editor "0.20.0"
+    papaparse "5.3.0"
+    rc-cascader "1.0.1"
+    rc-drawer "3.1.3"
+    rc-slider "9.6.4"
+    rc-time-picker "^3.7.3"
+    react "17.0.1"
+    react-beautiful-dnd "13.0.0"
+    react-calendar "2.19.2"
+    react-color "2.18.0"
+    react-custom-scrollbars "4.2.1"
+    react-dom "17.0.1"
+    react-highlight-words "0.16.0"
+    react-hook-form "5.1.3"
+    react-monaco-editor "0.36.0"
+    react-popper "2.2.4"
+    react-storybook-addon-props-combinations "1.1.0"
+    react-table "7.0.0"
+    react-transition-group "4.4.1"
+    slate "0.47.8"
+    tinycolor2 "1.4.1"
+    uplot "1.6.4"
+
+"@grafana/ui@7.4.3":
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-7.4.3.tgz#9de5225f102f133d143186281045e11a4ca75320"
+  integrity sha512-EZW9Y/idL8bNCIW8lHcqPLytP4yNn5dmx+zJYumWuO4drW+Jx/UJVdEkEUQ5H7Es3rNr2Y5HwDO09ubD+T1PCQ==
+  dependencies:
+    "@emotion/core" "^10.0.27"
+    "@grafana/data" "7.4.3"
+    "@grafana/e2e-selectors" "7.4.3"
     "@grafana/slate-react" "0.22.9-grafana"
     "@grafana/tsconfig" "^1.0.0-rc1"
     "@iconscout/react-unicons" "1.1.4"
