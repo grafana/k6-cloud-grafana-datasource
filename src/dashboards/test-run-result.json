@@ -5,7 +5,7 @@
       "label": "k6 Cloud",
       "description": "",
       "type": "datasource",
-      "pluginId": "k6-cloud-datasource",
+      "pluginId": "k6-cloud",
       "pluginName": "k6 Cloud"
     }
   ],
@@ -18,7 +18,7 @@
     },
     {
       "type": "datasource",
-      "id": "k6-cloud-datasource",
+      "id": "k6-cloud",
       "name": "k6 Cloud",
       "version": "1.0.0"
     },
@@ -959,7 +959,7 @@
         "multi": false,
         "name": "datasource",
         "options": [],
-        "query": "k6-cloud-datasource",
+        "query": "k6-cloud",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,

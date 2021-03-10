@@ -17,7 +17,7 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_BASIC_ENABLED=false
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=k6-cloud-ds
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=k6-cloud
     volumes:
       - "grafana:/var/lib/grafana"
-      - "./:/var/lib/grafana/plugins/k6-cloud-datasource"
+      - "./:/var/lib/grafana/plugins/k6-cloud"

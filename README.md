@@ -65,7 +65,7 @@ npm run build
 ```
 3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
 ```BASH
-cp -r ./dist /your/grafana/plugin/directory/k6-cloud-datasource
+cp -r ./dist /your/grafana/plugin/directory/k6-cloud
 ```
 **Linux**: By default, the Linux plugin location is: `/var/lib/grafana/plugins`
 
