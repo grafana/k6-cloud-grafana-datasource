@@ -56,7 +56,7 @@
   "panels": [
     {
       "datasource": "$datasource",
-      "description": "List of all k6 Cloud test runs associated with authenticated account.",
+      "description": "List of k6 Cloud test runs.",
       "fieldConfig": {
         "defaults": {
           "custom": {

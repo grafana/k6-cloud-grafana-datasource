@@ -1,27 +1,42 @@
 # k6 Cloud Grafana Data Source Plugin
-
-[![CircleCI](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master)
+[![CircleCI](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master.svg?style=svg&circle-token=3bac257ec661964a53b783650c5a31e190098c8e)](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master)
 
 Thi Grafana data source plugin allows you to view your tests results stored in k6 Cloud in Grafana.
 
 ![k6 Cloud Test Run Result Dashboard](src/img/screenshot_test_run_result1.png)
 
+## Prerequisites
+- Docker Engine with Compose installed
+- Node.js 12.x (lts/erbium) installed
+- Yarn or npm
+
 ## Getting started
 
-The instructions below will get you setup with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
+The instructions below will get you set up with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
 
 1. Install dependencies
 ```BASH
+# Yarn
 yarn install
+
+# npm
+npm install
 ```
+
 2. Build plugin in production mode
 ```BASH
+# Yarn
 yarn build
+
+# npm
+npm run build
 ```
+
 3. Start Grafana with Docker Compose
 ```BASH
 docker-compose up -d
 ```
+
 4. Open Grafana in your browser: [http://localhost:3000/](http://localhost:3000/)
 5. Install the k6 Cloud data source (search for `k6`): [http://localhost:3000/datasources](http://localhost:3000/datasources)
 6. Configure the data source by entering your k6 Cloud API token ([found here](https://app.k6.io/account/api-token)): [http://localhost:3000/datasources/edit/1/](http://localhost:3000/datasources/edit/1/)
@@ -34,15 +49,23 @@ If you're self-hosting a Grafana installation you can follow the steps below to 
 
 1. Install dependencies
 ```BASH
+# Yarn
 yarn install
+
+# npm
+npm install
 ```
 2. Build plugin in production mode
 ```BASH
+# Yarn
 yarn build
+
+#npm
+npm run build
 ```
 3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
 ```BASH
-cp -r ./dist /your/grafana/plugin/directory/k6-cloud-datasource
+cp -r ./dist /your/grafana/plugin/directory/k6-cloud
 ```
 **Linux**: By default, the Linux plugin location is: `/var/lib/grafana/plugins`
 

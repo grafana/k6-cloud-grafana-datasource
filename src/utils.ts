@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
 import {
-  K6TestRunStatus,
-  K6TestRunResultStatus,
   K6Metric,
   K6MetricType,
+  K6MetricTypeName,
+  // K6QueryType,
+  K6TestRunResultStatus,
+  K6TestRunStatus,
   K6VariableQueryType,
-  K6QueryType,
 } from './types';
 
 export const getMetricFromMetricNameAndTags = (
@@ -14,9 +15,9 @@ export const getMetricFromMetricNameAndTags = (
   metricName: string,
   tags: Map<string, string> | undefined
 ) => {
-  return _.find(_.filter(metricsList, { name: metricName }), item => {
+  return _.find(_.filter(metricsList, { name: metricName }), (item) => {
     const tagMatches = _.map(_.pick(Object.fromEntries(tags || []), ['url', 'method', 'status']), (value, key) => {
-      return item.tags?.has(key) ? item.tags?.get(key) === value : false;
+      return item.tags instanceof Map && item.tags?.has(key) ? item.tags?.get(key) === value : false;
     });
     return tagMatches.length === 0 || _.every(tagMatches);
   });
@@ -90,7 +91,7 @@ export const getEnumFromMetricType = (type: string) => {
   }
 };
 
-export const getTypeFromMetricEnum = (type: K6MetricType) => {
+export const getTypeFromMetricEnum = (type: K6MetricType): K6MetricTypeName => {
   switch (type) {
     case K6MetricType.COUNTER:
       return 'counter';
@@ -100,23 +101,6 @@ export const getTypeFromMetricEnum = (type: K6MetricType) => {
       return 'rate';
     default:
       return 'trend';
-  }
-};
-
-export const getTypeFromQueryTypeEnum = (type: K6QueryType) => {
-  switch (type) {
-    case K6QueryType.METRIC:
-      return 'metrics';
-    case K6QueryType.TEST_RUNS:
-      return 'test runs';
-    case K6QueryType.URLS:
-      return 'urls';
-    case K6QueryType.CHECKS:
-      return 'checks';
-    case K6QueryType.THRESHOLDS:
-      return 'thresholds';
-    default:
-      return 'unknown';
   }
 };
 
@@ -141,22 +125,13 @@ export const getUnitFromMetric = (metric: K6Metric, aggregation?: string) => {
   }
 };
 
-export function getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
-  return o[propertyName]; // o[propertyName] is of type T[K]
-}
-
-export const reduceByObjectProp = (listOfObjects: any[], propName: any) =>
-  _.reduce(
-    listOfObjects,
-    function(a, i) {
-      a.push(getProperty(i, propName));
-      return a;
-    },
-    [] as any[]
-  );
+export const reduceByObjectProp = <T, K extends keyof T>(listOfObjects: T[], propName: K): Array<T[K]> =>
+  listOfObjects.reduce((accumulator: Array<T[K]>, item: T) => {
+    return [...accumulator, item[propName]];
+  }, []);
 
 export const toTitleCase = (s: string) => {
-  return s.toLowerCase().replace(/\w\S*/g, function(t: string) {
+  return s.toLowerCase().replace(/\w\S*/g, function (t: string) {
     const i = t.indexOf('url');
     if (i === 0) {
       return t.substr(0, 3).toUpperCase() + t.substr(3).toLowerCase();
@@ -164,3 +139,11 @@ export const toTitleCase = (s: string) => {
     return t.charAt(0).toUpperCase() + t.substr(1).toLowerCase();
   });
 };
+
+export function getMetricTypeEnumById(id: string, metricList: K6Metric[] = []): K6MetricType {
+  return metricList.find((metric) => metric.id === id)?.type ?? K6MetricType.TREND;
+}
+
+export function getMetricTypeById(id: string, metricList: K6Metric[] = []): K6MetricTypeName {
+  return getTypeFromMetricEnum(getMetricTypeEnumById(id, metricList));
+}

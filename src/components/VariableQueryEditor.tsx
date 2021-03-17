@@ -1,11 +1,12 @@
-import _ from 'lodash';
 import React, { PureComponent } from 'react';
 
 import { LegacyForms } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 
-import { K6VariableQuery, K6VariableQueryType } from '../types';
-import { getTypeFromVariableQueryEnum } from '../utils';
+import { K6VariableQuery, K6VariableQueryType } from 'types';
+import { getTypeFromVariableQueryEnum } from 'utils';
+
+import { queryTypeOptions as options } from './QueryEditor/QueryTypeSelect';
 
 const { Select } = LegacyForms;
 
@@ -17,6 +18,21 @@ interface VariableQueryProps {
 interface State {
   query: K6VariableQuery;
 }
+
+const toQuery = (type: number): K6VariableQuery | null => {
+  switch (type) {
+    case K6VariableQueryType.ORGANIZATIONS:
+      return { qtype: type, query: '' };
+    case K6VariableQueryType.PROJECTS:
+      return { qtype: type, query: '$organization' };
+    case K6VariableQueryType.TESTS:
+      return { qtype: type, query: '$organization.$project' };
+    case K6VariableQueryType.TEST_RUNS:
+      return { qtype: type, query: '$organization.$project.$test' };
+    default:
+      return null;
+  }
+};
 
 export class VariableQueryEditor extends PureComponent<VariableQueryProps, State> {
   constructor(props: Readonly<VariableQueryProps>) {
@@ -32,48 +48,31 @@ export class VariableQueryEditor extends PureComponent<VariableQueryProps, State
   };
 
   onQueryTypeChange = (item: SelectableValue<string>) => {
-    const type: K6VariableQueryType = parseInt(item.value!, 10) as K6VariableQueryType;
-    switch (type) {
-      case K6VariableQueryType.ORGANIZATIONS:
-        this.setState({ query: { qtype: type, query: '' } });
-        break;
-      case K6VariableQueryType.PROJECTS:
-        this.setState({ query: { qtype: type, query: '$organization' } });
-        break;
-      case K6VariableQueryType.TESTS:
-        this.setState({ query: { qtype: type, query: '$organization.$project' } });
-        break;
-      case K6VariableQueryType.TEST_RUNS:
-        this.setState({ query: { qtype: type, query: '$organization.$project.$test' } });
-        break;
+    const query = toQuery(Number(item.value));
+
+    if (query === null) {
+      return;
     }
+
+    this.setState({
+      query,
+    });
   };
 
   render() {
-    const options = _.map(
-      _.filter(Object.keys(K6VariableQueryType), k => (_.isNaN(parseInt(k, 10)) ? false : true)),
-      item => {
-        return {
-          label: getTypeFromVariableQueryEnum(Number(item) as K6VariableQueryType),
-          value: item,
-        };
-      }
-    );
-    const current = options.find(item => item.value === String(this.state.query.qtype));
+    const current = options.find((item) => item.value === String(this.state.query.qtype));
 
     return (
-      <>
-        <div className="gf-form">
-          <span className="gf-form-label width-10">Query</span>
-          <Select
-            options={options}
-            value={current}
-            allowCustomValue={false}
-            onBlur={this.saveQuery}
-            onChange={this.onQueryTypeChange}
-          />
-        </div>
-      </>
+      <div className="gf-form">
+        <span className="gf-form-label width-10">Query</span>
+        <Select
+          options={options}
+          value={current}
+          allowCustomValue={false}
+          onBlur={this.saveQuery}
+          onChange={this.onQueryTypeChange}
+        />
+      </div>
     );
   }
 }

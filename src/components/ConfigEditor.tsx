@@ -3,11 +3,11 @@ import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 
-import { K6CloudDataSourceOptions, K6CloudSecureJsonData } from '../types';
+import { K6CloudDataSourceOptions, K6CloudSecureJsonData } from 'types';
 
 const { SecretFormField } = LegacyForms;
 
-interface Props extends DataSourcePluginOptionsEditorProps<K6CloudDataSourceOptions> {}
+interface Props extends DataSourcePluginOptionsEditorProps<K6CloudDataSourceOptions, K6CloudSecureJsonData> {}
 
 interface State {}
 
@@ -40,15 +40,14 @@ export class ConfigEditor extends PureComponent<Props, State> {
 
   render() {
     const { options } = this.props;
-    const { secureJsonFields } = options;
-    const secureJsonData = (options.secureJsonData || {}) as K6CloudSecureJsonData;
+    const { secureJsonFields, secureJsonData = {} } = options;
 
     return (
       <div className="gf-form-group">
         <div className="gf-form-inline">
           <div className="gf-form">
             <SecretFormField
-              isConfigured={(secureJsonFields && secureJsonFields.apiToken) as boolean}
+              isConfigured={secureJsonFields && secureJsonFields.apiToken}
               value={secureJsonData.apiToken || ''}
               label="API Token"
               placeholder="Your k6 Cloud API Token"

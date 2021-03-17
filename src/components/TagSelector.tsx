@@ -4,10 +4,10 @@ import React, { PureComponent } from 'react';
 import { Icon, InlineFormLabel, Select } from '@grafana/ui';
 import { SelectableValue } from '@grafana/data';
 
-import { K6SerieTag } from '../types';
+import { K6SeriesTag } from 'types';
 
 type TagSelectorStateProps = {
-  tag: K6SerieTag;
+  tag: K6SeriesTag;
   keys: string[];
   values: string[];
   onChange: (id: number, key: string, value: string) => void;
@@ -29,7 +29,7 @@ export class TagSelector extends PureComponent<TagSelectorStateProps, TagSelecto
     };
   }
 
-  async componentDidUpdate(prevProps: TagSelectorStateProps) {
+  async componentDidUpdate() {
     const { tag } = this.props;
     this.setState({
       id: tag.id,
@@ -52,21 +52,21 @@ export class TagSelector extends PureComponent<TagSelectorStateProps, TagSelecto
   };
 
   render() {
-    const keys = _.map(this.props.keys, item => {
+    const keys = _.map(this.props.keys, (item) => {
       return {
         label: item,
         value: item,
       };
     });
-    const values = _.map(this.props.values, item => {
+    const values = _.map(this.props.values, (item) => {
       return {
         label: item,
         value: item,
       };
     });
 
-    const currentKey = keys.find(item => item.value === this.state.key);
-    const currentValue = values.find(item => item.value === this.state.value);
+    const currentKey = keys.find((item) => item.value === this.state.key);
+    const currentValue = values.find((item) => item.value === this.state.value);
 
     return (
       <div className="gf-form-inline">
