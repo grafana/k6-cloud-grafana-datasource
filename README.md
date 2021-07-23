@@ -12,85 +12,41 @@ This Grafana data source plugin allows you to view your tests results stored in 
 
 ![k6 Cloud Test Run Result Dashboard](https://storage.googleapis.com/integration-artifacts/grafana-k6cloud-datasource/img/screenshot_test_run_result1.png)
 
-## Prerequisites
+## Installation
 
-- Docker Engine with docker-compose installed
-- Node.js 14.x installed
-- Yarn
+This plugin requires Grafana 7.1.0 or newer as of version 0.1.0.
 
-## Getting started
+## Grafana Cloud
 
-The instructions below will get you set up with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
+If you do not have a [Grafana Cloud](https://grafana.com/cloud) account, you can sign up for one [here](https://grafana.com/cloud/grafana).
 
-1. Install dependencies
+1. Click on the `Install Now` button on the [K6 Cloud Data Source page on Grafana.com](https://grafana.com/plugins/k6-cloud-grafana-datasource/?tab=installation). This will automatically add the plugin to your Grafana instance. It might take up to 30 seconds to install.
 
-```BASH
-yarn install
-```
+2. Login to your Hosted Grafana instance (go to your instances page in your profile): `https://grafana.com/orgs/<yourUserName>/instances/` and the K6 Cloud data source will be installed.
 
-2. Build plugin in production mode
+## Installing on a local Grafana instance
 
-```BASH
-# Yarn
-yarn build
-```
+The plugin is installed using the Grafana CLI and instructions can be found on the [installation page](https://grafana.com/plugins/k6-cloud-grafana-datasource/?tab=installation).
 
-3. Start Grafana with Docker Compose
+Restart your Grafana server after installing the plugin.
 
-```BASH
-docker-compose up -d
-```
+### Configure the data source
 
-4. Open Grafana in your browser: [http://localhost:3000/](http://localhost:3000/)
-5. Install the k6 Cloud data source (search for `k6`): [http://localhost:3000/datasources](http://localhost:3000/datasources)
-6. Configure the data source by entering your k6 Cloud API token ([found here](https://app.k6.io/account/api-token)): [http://localhost:3000/datasources/edit/1/](http://localhost:3000/datasources/edit/1/)
-7. Visit the "Dashboards" tab and "import" the two dashboards that come with the data source plugin: [http://localhost:3000/datasources/edit/1/dashboards](http://localhost:3000/datasources/edit/1/dashboards)
-8. Visit the test runs list dashboard to start using exploring your k6 Cloud account from Grafana: [http://localhost:3000/d/k6-cloud-test-runs/k6-cloud-test-runs-list](http://localhost:3000/d/k6-cloud-test-runs/k6-cloud-test-runs-list)
+Accessed from the Grafana main menu, newly installed data sources can be added immediately within the Data Sources section.
 
-## Installation with self-hosted Grafana
+Next, click the Add data source button in the upper right. The K6 Cloud data source will be available for selection in the Type select box.
 
-If you're self-hosting a Grafana installation you can follow the steps below to get the plugin setup:
+Copy your K6 [Token](https://k6.io/docs/cloud/integrations/token) and paste into the `API Token` field. Click the `Save and Test`button to check that your Token is valid and that you have a connection to the K6 Cloud.
 
-1. Install dependencies
-```BASH
-yarn install
-```
+### Sample Dashboard
 
-2. Build plugin in production mode
+There are two sample dashboards included with the data source and they can be imported from the Dashboards tab (beside the Settings tab) in the Data Source config.
 
-```BASH
-yarn build
-```
+They can also be found in the GitHub repository in the [dashboards directory](https://github.com/grafana/k6-cloud-grafana-datasource/tree/master/src/dashboards).
 
-3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
+## Contributing and local development
 
-```BASH
-cp -r ./dist/* /your/grafana/plugin/directory/grafana-k6cloud-datasource/
-```
-
-**Linux**: By default, the Linux plugin location is: `/var/lib/grafana/plugins`
-
-**macOS**: By default, the Mac plugin location is: `/usr/local/var/lib/grafana/plugins`
-
-4. When building locally, make sure you have [configured your Grafana installation](https://grafana.com/docs/grafana/latest/administration/configuration/#allow_loading_unsigned_plugins) to allow unsigned plugins.
-
-```INI
-...
-[plugins]
-allow_loading_unsigned_plugins=grafana-k6cloud-datasource
-```
-
-5. Restart Grafana to allow it to discover the new plugin, on Linux:
-
-```BASH
-service grafana-server restart
-```
-
-on macOS:
-
-```BASH
-brew services restart grafana
-```
+Instructions for building the plugin from source can be found at [Contributing](https://github.com/grafana/k6-cloud-grafana-datasource/blob/master/CONTRIBUTING.md).
 
 ## Learn more
 
