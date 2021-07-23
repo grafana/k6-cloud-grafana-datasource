@@ -29,9 +29,9 @@
       }
     ],
     "screenshots": [
-      {"name": "Test Runs List Dashboard", "path": "https://storage.googleapis.com/integration-artifacts/grafana-k6cloud-datasource/img/screenshot_test_runs_list.png" },
-      {"name": "Test Run Result Dashboard 1", "path": "https://storage.googleapis.com/integration-artifacts/grafana-k6cloud-datasource/img/screenshot_test_run_result1.png" },
-      {"name": "Test Run Result Dashboard 2", "path": "https://storage.googleapis.com/integration-artifacts/grafana-k6cloud-datasource/img/screenshot_test_run_result2.png" }
+      {"name": "Test Runs List Dashboard", "path": "img/screenshot_test_runs_list.png" },
+      {"name": "Test Run Result Dashboard 1", "path": "img/screenshot_test_run_result1.png" },
+      {"name": "Test Run Result Dashboard 2", "path": "img/screenshot_test_run_result2.png" }
     ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
