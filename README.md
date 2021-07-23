@@ -10,7 +10,7 @@
 
 This Grafana data source plugin allows you to view your tests results stored in k6 Cloud in Grafana.
 
-![k6 Cloud Test Run Result Dashboard](src/img/screenshot_test_run_result1.png)
+![k6 Cloud Test Run Result Dashboard](https://storage.googleapis.com/integration-artifacts/grafana-k6cloud-datasource/img/screenshot_test_run_result1.png)
 
 ## Prerequisites
 
