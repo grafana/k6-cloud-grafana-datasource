@@ -322,6 +322,37 @@ jobs:
           fi
           gsutil ls -r gs://integration-artifacts/${PLUGIN_NAME}
 
+  copy_screenshots_to_gcs:
+    executor: cloud_sdk_exec
+    steps:
+    - checkout
+    - attach_workspace:
+        at: .
+    - run:
+        name: "Copy Screenshots to GCS Bucket"
+        command: |
+          if [ ! -d src/screenshots ] && [ ! -d src/img ]; then
+            exit 0
+          fi
+          if [ -z "${GCLOUD_SERVICE_KEY}" ]; then
+            echo "Missing GCS Publish Key"
+            exit -1
+          fi
+          apt update
+          apt install -y jq git-lfs
+          PLUGIN_NAME=`cat ci/dist/plugin.json|jq '.id'| sed s/\"//g`
+          echo ${GCLOUD_SERVICE_KEY} | gcloud auth activate-service-account --key-file=-
+          if [ -d src/screenshots ]; then
+            echo "Copying screenshots to gs://integration-artifacts/${PLUGIN_NAME}/screenshots/"
+            gsutil -m cp -r src/screenshots/** gs://integration-artifacts/${PLUGIN_NAME}/screenshots/
+            gsutil ls -r gs://integration-artifacts/${PLUGIN_NAME}/screenshots
+          fi
+          if [ -d src/img ]; then
+            echo "Copying img to gs://integration-artifacts/${PLUGIN_NAME}/img/"
+            gsutil -m cp -r src/img/** gs://integration-artifacts/${PLUGIN_NAME}/img
+            gsutil ls -r gs://integration-artifacts/${PLUGIN_NAME}/img
+          fi
+
   publish_gcs_release:
     executor: cloud_sdk_exec
     steps:
