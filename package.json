@@ -12,18 +12,18 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "7.4.0",
-    "@grafana/toolkit": "7.4.0",
+    "@grafana/toolkit": "7.5.9",
     "@grafana/ui": "7.4.0",
-    "@testing-library/jest-dom": "5.11.9",
+    "@testing-library/jest-dom": "5.14.1",
     "@testing-library/react": "^11.2.5",
-    "@types/lodash": "4.14.168"
+    "@types/lodash": "4.14.171"
   },
   "engines": {
-    "node": ">=12 <13"
+    "node": ">=14 <15"
   },
   "dependencies": {
-    "@grafana/runtime": "^7.4.3",
-    "@types/keyv": "^3.1.1",
-    "keyv": "^4.0.3"
+    "@grafana/runtime": "7.4.3",
+    "@types/keyv": "3.1.2",
+    "keyv": "4.0.3"
   }
 }
