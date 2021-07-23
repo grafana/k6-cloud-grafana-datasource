@@ -20,13 +20,13 @@ This plugin requires Grafana 7.1.0 or newer as of version 0.1.0.
 
 If you do not have a [Grafana Cloud](https://grafana.com/cloud) account, you can sign up for one [here](https://grafana.com/cloud/grafana).
 
-1. Click on the `Install Now` button on the [K6 Cloud Data Source page on Grafana.com](https://grafana.com/plugins/k6-cloud-grafana-datasource/?tab=installation). This will automatically add the plugin to your Grafana instance. It might take up to 30 seconds to install.
+1. Click on the `Install Now` button on the [K6 Cloud Data Source page on Grafana.com](https://grafana.com/plugins/grafana-k6cloud-datasource/?tab=installation). This will automatically add the plugin to your Grafana instance. It might take up to 30 seconds to install.
 
 2. Login to your Hosted Grafana instance (go to your instances page in your profile): `https://grafana.com/orgs/<yourUserName>/instances/` and the K6 Cloud data source will be installed.
 
 ## Installing on a local Grafana instance
 
-The plugin is installed using the Grafana CLI and instructions can be found on the [installation page](https://grafana.com/plugins/k6-cloud-grafana-datasource/?tab=installation).
+The plugin is installed using the Grafana CLI and instructions can be found on the [installation page](https://grafana.com/plugins/grafana-k6cloud-datasource/?tab=installation).
 
 Restart your Grafana server after installing the plugin.
 
