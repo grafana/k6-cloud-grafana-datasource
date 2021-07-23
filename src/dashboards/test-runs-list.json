@@ -5,7 +5,7 @@
       "label": "k6 Cloud",
       "description": "",
       "type": "datasource",
-      "pluginId": "k6-cloud-datasource",
+      "pluginId": "grafana-k6cloud-datasource",
       "pluginName": "k6 Cloud"
     }
   ],
@@ -18,7 +18,7 @@
     },
     {
       "type": "datasource",
-      "id": "k6-cloud-datasource",
+      "id": "grafana-k6cloud-datasource",
       "name": "k6 Cloud",
       "version": "1.0.0"
     },
@@ -289,7 +289,7 @@
         "multi": false,
         "name": "datasource",
         "options": [],
-        "query": "k6-cloud-datasource",
+        "query": "grafana-k6cloud-datasource",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
