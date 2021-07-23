@@ -1,38 +1,42 @@
 # k6 Cloud Grafana Data Source Plugin
-[![CircleCI](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master.svg?style=svg&circle-token=3bac257ec661964a53b783650c5a31e190098c8e)](https://circleci.com/gh/k6io/k6-cloud-grafana-datasource/tree/master)
 
-Thi Grafana data source plugin allows you to view your tests results stored in k6 Cloud in Grafana.
+[![CircleCI](https://circleci.com/gh/grafana/k6-cloud-grafana-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/k6-cloud-grafana-datasource/tree/master)
+[![Marketplace](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=marketplace&prefix=v&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22grafana-k6cloud-datasource%22%29%5D.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/grafana-k6cloud-datasource)
+[![Downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=downloads&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22grafana-k6cloud-datasource%22%29%5D.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/grafana-k6cloud-datasource)
+[![License](https://img.shields.io/github/license/grafana/k6-cloud-grafana-datasource)](LICENSE)
+[![Known Vulnerabilities](https://snyk.io/test/github/grafana/k6-cloud-grafana-datasource/badge.svg)](https://snyk.io/test/github/grafana/k6-cloud-grafana-datasource)
+[![Maintainability](https://api.codeclimate.com/v1/badges/280a6029d9b8a329812c/maintainability)](https://codeclimate.com/github/grafana/k6-cloud-grafana-datasource/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/280a6029d9b8a329812c/test_coverage)](https://codeclimate.com/github/grafana/k6-cloud-grafana-datasource/test_coverage)
 
-![k6 Cloud Test Run Result Dashboard](src/img/screenshot_test_run_result1.png)
+This Grafana data source plugin allows you to view your tests results stored in k6 Cloud in Grafana.
+
+![k6 Cloud Test Run Result Dashboard](https://storage.googleapis.com/integration-artifacts/grafana-k6cloud-datasource/img/screenshot_test_run_result1.png)
 
 ## Prerequisites
-- Docker Engine with Compose installed
-- Node.js 12.x (lts/erbium) installed
-- Yarn or npm
+
+- Docker Engine with docker-compose installed
+- Node.js 14.x installed
+- Yarn
 
 ## Getting started
 
 The instructions below will get you set up with a Docker Compose based Grafana setup to quickly try the plugin. Instructions for installing the plugin with a self-hosted version of Grafana follows further down.
 
 1. Install dependencies
-```BASH
-# Yarn
-yarn install
 
-# npm
-npm install
+```BASH
+yarn install
 ```
 
 2. Build plugin in production mode
+
 ```BASH
 # Yarn
 yarn build
-
-# npm
-npm run build
 ```
 
 3. Start Grafana with Docker Compose
+
 ```BASH
 docker-compose up -d
 ```
@@ -49,44 +53,46 @@ If you're self-hosting a Grafana installation you can follow the steps below to 
 
 1. Install dependencies
 ```BASH
-# Yarn
 yarn install
-
-# npm
-npm install
 ```
+
 2. Build plugin in production mode
-```BASH
-# Yarn
-yarn build
 
-#npm
-npm run build
-```
-3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
 ```BASH
-cp -r ./dist /your/grafana/plugin/directory/k6-cloud
+yarn build
 ```
+
+3. Install plugin by copying the files from `./dist` to your Grafana plugin directory
+
+```BASH
+cp -r ./dist/* /your/grafana/plugin/directory/grafana-k6cloud-datasource/
+```
+
 **Linux**: By default, the Linux plugin location is: `/var/lib/grafana/plugins`
 
 **macOS**: By default, the Mac plugin location is: `/usr/local/var/lib/grafana/plugins`
 
-4. Make sure you have [configured your Grafana installation](https://grafana.com/docs/grafana/latest/administration/configuration/) to allow unsigned plugins
+4. When building locally, make sure you have [configured your Grafana installation](https://grafana.com/docs/grafana/latest/administration/configuration/#allow_loading_unsigned_plugins) to allow unsigned plugins.
+
 ```INI
 ...
 [plugins]
-allow_loading_unsigned_plugins=true
-...
+allow_loading_unsigned_plugins=grafana-k6cloud-datasource
 ```
+
 5. Restart Grafana to allow it to discover the new plugin, on Linux:
+
 ```BASH
 service grafana-server restart
 ```
+
 on macOS:
+
 ```BASH
 brew services restart grafana
 ```
 
 ## Learn more
+
 - [k6 Cloud](https://k6.io/)
 - [Grafana documentation](https://grafana.com/docs/)
