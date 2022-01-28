@@ -1,6 +1,6 @@
 {
   "name": "k6-cloud-grafana-datasource",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Access load test results from k6 Cloud in Grafana",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
