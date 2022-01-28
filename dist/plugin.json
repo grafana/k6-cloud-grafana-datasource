@@ -1,0 +1,73 @@
+{
+  "type": "datasource",
+  "name": "k6 Cloud",
+  "id": "grafana-k6cloud-datasource",
+  "metrics": true,
+  "info": {
+    "description": "Access load test results from k6 Cloud in Grafana",
+    "author": {
+      "name": "k6 Team",
+      "url": "https://k6.io/"
+    },
+    "keywords": [
+      "load test",
+      "performance test",
+      "k6"
+    ],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "Website",
+        "url": "https://github.com/k6io/k6-cloud-grafana-datasource"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/k6io/k6-cloud-grafana-datasource/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [
+      {"name": "Test Runs List Dashboard", "path": "img/screenshot_test_runs_list.png" },
+      {"name": "Test Run Result Dashboard 1", "path": "img/screenshot_test_run_result1.png" },
+      {"name": "Test Run Result Dashboard 2", "path": "img/screenshot_test_run_result2.png" }
+    ],
+    "version": "0.1.6",
+    "updated": "2022-01-28"
+  },
+  "includes": [
+    {
+      "type": "dashboard",
+      "name": "Test Runs List",
+      "path": "dashboards/test-runs-list.json"
+    },
+    {
+      "type": "dashboard",
+      "name": "Test Run Result",
+      "path": "dashboards/test-run-result.json"
+    },
+    {
+      "type": "datasource",
+      "name": "grafana-k6cloud-datasource"
+    }
+  ],
+  "routes": [
+    {
+      "path": "base",
+      "method": "GET",
+      "url": "https://api.k6.io",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Token {{ .SecureJsonData.apiToken }}"
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "grafanaDependency": ">=7.1.0",
+    "grafanaVersion": "7.1.x",
+    "plugins": []
+  }
+}
