@@ -1,3 +1,7 @@
+# Deprecation Notice
+⚠️ This plugin is deprecated and will be no longer maintained in favor of [k6 Cloud App](https://grafana.com/grafana/plugins/grafana-k6-app) ⚠️
+
+
 # k6 Cloud Grafana Data Source Plugin
 
 [![CircleCI](https://circleci.com/gh/grafana/k6-cloud-grafana-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/grafana/k6-cloud-grafana-datasource/tree/master)
