@@ -1,5 +1,5 @@
 # Deprecation Notice
-⚠️ This plugin is deprecated and will be no longer maintained in favor of [Grafana Cloud k6](https://grafana.com/products/cloud/k6/ ⚠️
+⚠️ This plugin is deprecated and will be no longer maintained in favor of [Grafana Cloud k6](https://grafana.com/products/cloud/k6/) ⚠️
 
 
 # k6 Cloud Grafana Data Source Plugin
